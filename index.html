@@ -1,0 +1,1032 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EMEA ISV SA Manager Annual Calendar</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Amazon Ember', 'Helvetica Neue', Roboto, Arial, sans-serif;
+            background: linear-gradient(135deg, #232F3E 0%, #131A22 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #232F3E 0%, #131A22 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            border-bottom: 4px solid #FF9900;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .controls {
+            padding: 20px 30px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .year-selector {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .year-btn {
+            background: #FF9900;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+        }
+
+        .year-btn:hover {
+            background: #FF7700;
+        }
+
+        .current-year {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .legend {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+        }
+
+        .legend-color {
+            width: 20px;
+            height: 20px;
+            border-radius: 3px;
+        }
+
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            padding: 30px;
+        }
+
+        .month-card {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .month-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+
+        .month-header {
+            background: linear-gradient(135deg, #FF9900 0%, #FF7700 100%);
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-size: 1.3em;
+            font-weight: 600;
+        }
+
+        .month-body {
+            padding: 20px;
+        }
+
+        .event {
+            margin-bottom: 12px;
+            padding: 10px;
+            border-radius: 6px;
+            border-left: 4px solid;
+            background: #f8f9fa;
+            transition: background 0.3s;
+        }
+
+        .event:hover {
+            background: #e9ecef;
+        }
+
+        .event-title {
+            font-weight: 600;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .event-date {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .event-description {
+            font-size: 0.85em;
+            color: #777;
+            line-height: 1.4;
+        }
+
+        /* Event Categories */
+        .event.offsite {
+            border-left-color: #e74c3c;
+            background: #fdf2f2;
+        }
+
+        .event.documentation {
+            border-left-color: #3498db;
+            background: #f2f8fd;
+        }
+
+        .event.planning {
+            border-left-color: #f39c12;
+            background: #fdf8f2;
+        }
+
+        .event.review {
+            border-left-color: #27ae60;
+            background: #f2fdf5;
+        }
+
+        .event.training {
+            border-left-color: #9b59b6;
+            background: #f8f2fd;
+        }
+
+        .event.deadline {
+            border-left-color: #e67e22;
+            background: #fdf5f2;
+        }
+
+        .no-events {
+            text-align: center;
+            color: #999;
+            font-style: italic;
+            padding: 20px;
+        }
+
+        .add-event-btn {
+            background: #FF9900;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            margin-top: 10px;
+            transition: background 0.3s;
+        }
+
+        .add-event-btn:hover {
+            background: #FF7700;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .close {
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: #000;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            height: 80px;
+        }
+
+        .btn-primary {
+            background: #FF9900;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s;
+        }
+
+        .btn-primary:hover {
+            background: #FF7700;
+        }
+
+        .btn-secondary {
+            background: #232F3E;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            margin: 5px;
+            transition: background 0.3s;
+        }
+
+        .btn-secondary:hover {
+            background: #131A22;
+        }
+
+        .btn-danger {
+            background: #d32f2f;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-left: 10px;
+            transition: background 0.3s;
+        }
+
+        .btn-danger:hover {
+            background: #b71c1c;
+        }
+
+        .management-section {
+            padding: 20px 30px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+            text-align: center;
+        }
+
+        .event-type-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 15px;
+        }
+
+        .event-type-item {
+            display: flex;
+            align-items: center;
+            background: white;
+            padding: 8px 12px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .event-actions {
+            display: flex;
+            gap: 5px;
+            margin-top: 10px;
+        }
+
+        .edit-event-btn {
+            background: #FF9900;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 11px;
+            transition: background 0.3s;
+        }
+
+        .edit-event-btn:hover {
+            background: #FF7700;
+        }
+
+        .delete-event-btn {
+            background: #d32f2f;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 11px;
+            transition: background 0.3s;
+        }
+
+        .delete-event-btn:hover {
+            background: #b71c1c;
+        }
+
+        @media (max-width: 768px) {
+            .calendar-grid {
+                grid-template-columns: 1fr;
+                padding: 15px;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .legend {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>EMEA ISV SA Manager Annual Calendar</h1>
+            <p>Your comprehensive timeline for offsites, documentation, and key milestones</p>
+        </div>
+
+        <div class="controls">
+            <div class="year-selector">
+                <button class="year-btn" onclick="changeYear(-1)">← Previous</button>
+                <span class="current-year" id="currentYear">2025</span>
+                <button class="year-btn" onclick="changeYear(1)">Next →</button>
+            </div>
+            
+            <div class="legend">
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #e74c3c;"></div>
+                    <span>Offsites</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #3498db;"></div>
+                    <span>Documentation</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #f39c12;"></div>
+                    <span>Planning</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #27ae60;"></div>
+                    <span>Reviews</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #9b59b6;"></div>
+                    <span>Training</span>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-color" style="background: #e67e22;"></div>
+                    <span>Deadlines</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="management-section">
+            <h3>Calendar Management</h3>
+            <div>
+                <button class="btn-secondary" onclick="openEventTypesModal()">Manage Event Types</button>
+                <button class="btn-secondary" onclick="exportCalendar()">Export Calendar</button>
+                <button class="btn-secondary" onclick="importCalendar()">Import Calendar</button>
+                <input type="file" id="importFile" accept=".json" style="display: none;" onchange="handleImport(event)">
+            </div>
+            <div class="event-type-list" id="eventTypesList">
+                <!-- Event types will be displayed here -->
+            </div>
+        </div>
+
+        <div class="calendar-grid" id="calendarGrid">
+            <!-- Calendar months will be generated here -->
+        </div>
+    </div>
+
+    <!-- Event Types Management Modal -->
+    <div id="eventTypesModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Manage Event Types</h2>
+                <span class="close" onclick="closeEventTypesModal()">&times;</span>
+            </div>
+            <div id="eventTypesEditor">
+                <!-- Event types editor will be populated here -->
+            </div>
+            <div style="margin-top: 20px;">
+                <button class="btn-secondary" onclick="addNewEventType()">Add New Event Type</button>
+                <button class="btn-primary" onclick="saveEventTypes()">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Event Modal -->
+    <div id="eventModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Add New Event</h2>
+                <span class="close" onclick="closeModal()">&times;</span>
+            </div>
+            <form id="eventForm">
+                <div class="form-group">
+                    <label for="eventTitle">Event Title:</label>
+                    <input type="text" id="eventTitle" required>
+                </div>
+                <div class="form-group">
+                    <label for="eventDate">Date:</label>
+                    <input type="date" id="eventDate" required>
+                </div>
+                <div class="form-group">
+                    <label for="eventCategory">Category:</label>
+                    <select id="eventCategory" required>
+                        <option value="offsite">Offsite</option>
+                        <option value="documentation">Documentation</option>
+                        <option value="planning">Planning</option>
+                        <option value="review">Review</option>
+                        <option value="training">Training</option>
+                        <option value="deadline">Deadline</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="eventDescription">Description:</label>
+                    <textarea id="eventDescription"></textarea>
+                </div>
+                <button type="submit" class="btn-primary">Add Event</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        let currentYear = 2025;
+        let eventTypes = {
+            offsite: { name: 'Offsites', color: '#e74c3c' },
+            documentation: { name: 'Documentation', color: '#3498db' },
+            planning: { name: 'Planning', color: '#f39c12' },
+            review: { name: 'Reviews', color: '#27ae60' },
+            training: { name: 'Training', color: '#9b59b6' },
+            deadline: { name: 'Deadlines', color: '#e67e22' }
+        };
+        let events = {
+            // Sample events - replace with your actual data
+            2025: {
+                1: [
+                    {
+                        id: 'evt_1',
+                        title: "Q1 Planning Session",
+                        date: "2025-01-15",
+                        category: "planning",
+                        description: "Quarterly planning and goal setting for EMEA ISV SA team"
+                    }
+                ],
+                2: [
+                    {
+                        id: 'evt_2',
+                        title: "Documentation Review",
+                        date: "2025-02-10",
+                        category: "documentation",
+                        description: "Review and update SA documentation and processes"
+                    }
+                ],
+                3: [
+                    {
+                        id: 'evt_3',
+                        title: "EMEA ISV SA Offsite",
+                        date: "2025-03-20",
+                        category: "offsite",
+                        description: "Annual team offsite for strategy alignment and team building"
+                    }
+                ],
+                4: [
+                    {
+                        id: 'evt_4',
+                        title: "Q1 Review Meeting",
+                        date: "2025-04-05",
+                        category: "review",
+                        description: "Quarterly performance review and planning adjustments"
+                    }
+                ],
+                5: [
+                    {
+                        id: 'evt_5',
+                        title: "Technical Training Week",
+                        date: "2025-05-12",
+                        category: "training",
+                        description: "Advanced technical training for new AWS services"
+                    }
+                ],
+                6: [
+                    {
+                        id: 'evt_6',
+                        title: "Mid-Year Documentation Deadline",
+                        date: "2025-06-30",
+                        category: "deadline",
+                        description: "Deadline for mid-year documentation updates"
+                    }
+                ]
+            }
+        };
+
+        const months = [
+            'January', 'February', 'March', 'April', 'May', 'June',
+            'July', 'August', 'September', 'October', 'November', 'December'
+        ];
+
+        function initializeCalendar() {
+            document.getElementById('currentYear').textContent = currentYear;
+            loadEventTypes();
+            renderEventTypesList();
+            renderCalendar();
+        }
+
+        function renderCalendar() {
+            const calendarGrid = document.getElementById('calendarGrid');
+            calendarGrid.innerHTML = '';
+
+            for (let month = 1; month <= 12; month++) {
+                const monthCard = createMonthCard(month);
+                calendarGrid.appendChild(monthCard);
+            }
+        }
+
+        function createMonthCard(month) {
+            const monthCard = document.createElement('div');
+            monthCard.className = 'month-card';
+
+            const monthHeader = document.createElement('div');
+            monthHeader.className = 'month-header';
+            monthHeader.textContent = months[month - 1];
+
+            const monthBody = document.createElement('div');
+            monthBody.className = 'month-body';
+
+            const monthEvents = events[currentYear] && events[currentYear][month] ? events[currentYear][month] : [];
+
+            if (monthEvents.length === 0) {
+                const noEvents = document.createElement('div');
+                noEvents.className = 'no-events';
+                noEvents.textContent = 'No events scheduled';
+                monthBody.appendChild(noEvents);
+            } else {
+                monthEvents.forEach(event => {
+                    const eventElement = createEventElement(event);
+                    monthBody.appendChild(eventElement);
+                });
+            }
+
+            const addButton = document.createElement('button');
+            addButton.className = 'add-event-btn';
+            addButton.textContent = 'Add Event';
+            addButton.onclick = () => openModal(month);
+            monthBody.appendChild(addButton);
+
+            monthCard.appendChild(monthHeader);
+            monthCard.appendChild(monthBody);
+
+            return monthCard;
+        }
+
+        function createEventElement(event) {
+            const eventDiv = document.createElement('div');
+            eventDiv.className = `event ${event.category}`;
+
+            const eventTitle = document.createElement('div');
+            eventTitle.className = 'event-title';
+            eventTitle.textContent = event.title;
+
+            const eventDate = document.createElement('div');
+            eventDate.className = 'event-date';
+            eventDate.textContent = new Date(event.date).toLocaleDateString('en-US', {
+                weekday: 'short',
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric'
+            });
+
+            const eventDescription = document.createElement('div');
+            eventDescription.className = 'event-description';
+            eventDescription.textContent = event.description;
+
+            const eventActions = document.createElement('div');
+            eventActions.className = 'event-actions';
+
+            const editBtn = document.createElement('button');
+            editBtn.className = 'edit-event-btn';
+            editBtn.textContent = 'Edit';
+            editBtn.onclick = () => editEvent(event);
+
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'delete-event-btn';
+            deleteBtn.textContent = 'Delete';
+            deleteBtn.onclick = () => deleteEvent(event);
+
+            eventActions.appendChild(editBtn);
+            eventActions.appendChild(deleteBtn);
+
+            eventDiv.appendChild(eventTitle);
+            eventDiv.appendChild(eventDate);
+            if (event.description) {
+                eventDiv.appendChild(eventDescription);
+            }
+            eventDiv.appendChild(eventActions);
+
+            return eventDiv;
+        }
+
+        function changeYear(direction) {
+            currentYear += direction;
+            document.getElementById('currentYear').textContent = currentYear;
+            
+            // Initialize year if it doesn't exist
+            if (!events[currentYear]) {
+                events[currentYear] = {};
+            }
+            
+            renderCalendar();
+        }
+
+        function openModal(month, eventToEdit = null) {
+            const modal = document.getElementById('eventModal');
+            modal.style.display = 'block';
+            
+            if (eventToEdit) {
+                // Editing existing event
+                document.getElementById('eventTitle').value = eventToEdit.title;
+                document.getElementById('eventDate').value = eventToEdit.date;
+                document.getElementById('eventCategory').value = eventToEdit.category;
+                document.getElementById('eventDescription').value = eventToEdit.description || '';
+                document.getElementById('eventForm').dataset.editingId = eventToEdit.id;
+            } else {
+                // Adding new event
+                const defaultDate = `${currentYear}-${month.toString().padStart(2, '0')}-01`;
+                document.getElementById('eventDate').value = defaultDate;
+                delete document.getElementById('eventForm').dataset.editingId;
+            }
+            
+            updateEventCategoryOptions();
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('eventModal');
+            modal.style.display = 'none';
+            document.getElementById('eventForm').reset();
+            delete document.getElementById('eventForm').dataset.editingId;
+        }
+
+        function updateEventCategoryOptions() {
+            const categorySelect = document.getElementById('eventCategory');
+            categorySelect.innerHTML = '';
+            
+            Object.keys(eventTypes).forEach(key => {
+                const option = document.createElement('option');
+                option.value = key;
+                option.textContent = eventTypes[key].name;
+                categorySelect.appendChild(option);
+            });
+        }
+
+        function editEvent(event) {
+            const eventDate = new Date(event.date);
+            const month = eventDate.getMonth() + 1;
+            openModal(month, event);
+        }
+
+        function deleteEvent(event) {
+            if (confirm(`Are you sure you want to delete "${event.title}"?`)) {
+                const eventDate = new Date(event.date);
+                const month = eventDate.getMonth() + 1;
+                const year = eventDate.getFullYear();
+                
+                if (events[year] && events[year][month]) {
+                    events[year][month] = events[year][month].filter(e => e.id !== event.id);
+                    saveEvents();
+                    renderCalendar();
+                }
+            }
+        }
+
+        // Event Types Management
+        function openEventTypesModal() {
+            const modal = document.getElementById('eventTypesModal');
+            modal.style.display = 'block';
+            renderEventTypesEditor();
+        }
+
+        function closeEventTypesModal() {
+            const modal = document.getElementById('eventTypesModal');
+            modal.style.display = 'none';
+        }
+
+        function renderEventTypesEditor() {
+            const editor = document.getElementById('eventTypesEditor');
+            editor.innerHTML = '';
+
+            Object.keys(eventTypes).forEach(key => {
+                const typeDiv = document.createElement('div');
+                typeDiv.style.marginBottom = '15px';
+                typeDiv.style.padding = '10px';
+                typeDiv.style.border = '1px solid #ddd';
+                typeDiv.style.borderRadius = '5px';
+
+                typeDiv.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <input type="text" value="${eventTypes[key].name}" 
+                               onchange="updateEventTypeName('${key}', this.value)"
+                               style="flex: 1; padding: 5px;">
+                        <input type="color" value="${eventTypes[key].color}" 
+                               onchange="updateEventTypeColor('${key}', this.value)"
+                               style="width: 50px;">
+                        <button class="btn-danger" onclick="deleteEventType('${key}')">Delete</button>
+                    </div>
+                `;
+
+                editor.appendChild(typeDiv);
+            });
+        }
+
+        function updateEventTypeName(key, newName) {
+            eventTypes[key].name = newName;
+        }
+
+        function updateEventTypeColor(key, newColor) {
+            eventTypes[key].color = newColor;
+        }
+
+        function addNewEventType() {
+            const key = prompt('Enter a unique key for the new event type (lowercase, no spaces):');
+            if (key && !eventTypes[key]) {
+                const name = prompt('Enter the display name for this event type:');
+                if (name) {
+                    eventTypes[key] = {
+                        name: name,
+                        color: '#' + Math.floor(Math.random()*16777215).toString(16)
+                    };
+                    renderEventTypesEditor();
+                }
+            } else if (eventTypes[key]) {
+                alert('This key already exists. Please choose a different one.');
+            }
+        }
+
+        function deleteEventType(key) {
+            if (confirm(`Are you sure you want to delete the "${eventTypes[key].name}" event type?`)) {
+                delete eventTypes[key];
+                renderEventTypesEditor();
+            }
+        }
+
+        function saveEventTypes() {
+            // Update CSS for new event types
+            updateEventTypeStyles();
+            localStorage.setItem('emeaISVSAEventTypes', JSON.stringify(eventTypes));
+            renderEventTypesList();
+            closeEventTypesModal();
+            renderCalendar();
+        }
+
+        function updateEventTypeStyles() {
+            let styleElement = document.getElementById('dynamicEventStyles');
+            if (!styleElement) {
+                styleElement = document.createElement('style');
+                styleElement.id = 'dynamicEventStyles';
+                document.head.appendChild(styleElement);
+            }
+
+            let css = '';
+            Object.keys(eventTypes).forEach(key => {
+                css += `
+                    .event.${key} {
+                        border-left-color: ${eventTypes[key].color};
+                        background: ${eventTypes[key].color}15;
+                    }
+                `;
+            });
+
+            styleElement.textContent = css;
+        }
+
+        function renderEventTypesList() {
+            const list = document.getElementById('eventTypesList');
+            list.innerHTML = '';
+
+            Object.keys(eventTypes).forEach(key => {
+                const item = document.createElement('div');
+                item.className = 'event-type-item';
+                item.innerHTML = `
+                    <div class="legend-color" style="background: ${eventTypes[key].color};"></div>
+                    <span>${eventTypes[key].name}</span>
+                `;
+                list.appendChild(item);
+            });
+        }
+
+        // Import/Export functionality
+        function exportCalendar() {
+            const data = {
+                events: events,
+                eventTypes: eventTypes,
+                exportDate: new Date().toISOString()
+            };
+
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `emea-isv-sa-calendar-${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function importCalendar() {
+            document.getElementById('importFile').click();
+        }
+
+        function handleImport(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const data = JSON.parse(e.target.result);
+                        if (data.events) events = data.events;
+                        if (data.eventTypes) eventTypes = data.eventTypes;
+                        
+                        saveEvents();
+                        saveEventTypes();
+                        updateEventTypeStyles();
+                        renderEventTypesList();
+                        renderCalendar();
+                        
+                        alert('Calendar imported successfully!');
+                    } catch (error) {
+                        alert('Error importing calendar: Invalid file format');
+                    }
+                };
+                reader.readAsText(file);
+            }
+        }
+
+        function saveEvents() {
+            localStorage.setItem('emeaISVSAEvents', JSON.stringify(events));
+        }
+
+        function loadEventTypes() {
+            const savedEventTypes = localStorage.getItem('emeaISVSAEventTypes');
+            if (savedEventTypes) {
+                eventTypes = JSON.parse(savedEventTypes);
+            }
+            updateEventTypeStyles();
+        }
+
+        document.getElementById('eventForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const title = document.getElementById('eventTitle').value;
+            const date = document.getElementById('eventDate').value;
+            const category = document.getElementById('eventCategory').value;
+            const description = document.getElementById('eventDescription').value;
+            const editingId = this.dataset.editingId;
+            
+            const eventDate = new Date(date);
+            const month = eventDate.getMonth() + 1;
+            const year = eventDate.getFullYear();
+            
+            // Initialize year and month if they don't exist
+            if (!events[year]) {
+                events[year] = {};
+            }
+            if (!events[year][month]) {
+                events[year][month] = [];
+            }
+            
+            if (editingId) {
+                // Update existing event
+                let eventFound = false;
+                for (let y in events) {
+                    for (let m in events[y]) {
+                        const eventIndex = events[y][m].findIndex(e => e.id === editingId);
+                        if (eventIndex !== -1) {
+                            // Remove from old location
+                            events[y][m].splice(eventIndex, 1);
+                            eventFound = true;
+                            break;
+                        }
+                    }
+                    if (eventFound) break;
+                }
+            }
+            
+            // Add the event (new or updated)
+            const eventId = editingId || 'evt_' + Date.now();
+            events[year][month].push({
+                id: eventId,
+                title: title,
+                date: date,
+                category: category,
+                description: description
+            });
+            
+            // Sort events by date
+            events[year][month].sort((a, b) => new Date(a.date) - new Date(b.date));
+            
+            saveEvents();
+            closeModal();
+            renderCalendar();
+        });
+
+        // Load events from localStorage on page load
+        function loadEvents() {
+            const savedEvents = localStorage.getItem('emeaISVSAEvents');
+            if (savedEvents) {
+                events = JSON.parse(savedEvents);
+            }
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const eventModal = document.getElementById('eventModal');
+            const typesModal = document.getElementById('eventTypesModal');
+            if (event.target === eventModal) {
+                closeModal();
+            }
+            if (event.target === typesModal) {
+                closeEventTypesModal();
+            }
+        }
+
+        // Initialize the calendar when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            loadEvents();
+            initializeCalendar();
+        });
+    </script>
+</body>
+</html>
