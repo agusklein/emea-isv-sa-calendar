@@ -12,8 +12,8 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Amazon Ember', 'Helvetica Neue', Roboto, Arial, sans-serif;
+            background: linear-gradient(135deg, #232F3E 0%, #131A22 100%);
             min-height: 100vh;
             padding: 20px;
         }
@@ -28,10 +28,11 @@
         }
 
         .header {
-            background: linear-gradient(135deg, #232526 0%, #414345 100%);
+            background: linear-gradient(135deg, #232F3E 0%, #131A22 100%);
             color: white;
             padding: 30px;
             text-align: center;
+            border-bottom: 4px solid #FF9900;
         }
 
         .header h1 {
@@ -63,7 +64,7 @@
         }
 
         .year-btn {
-            background: #007bff;
+            background: #FF9900;
             color: white;
             border: none;
             padding: 10px 15px;
@@ -74,7 +75,7 @@
         }
 
         .year-btn:hover {
-            background: #0056b3;
+            background: #FF7700;
         }
 
         .current-year {
@@ -123,7 +124,7 @@
         }
 
         .month-header {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #FF9900 0%, #FF7700 100%);
             color: white;
             padding: 15px;
             text-align: center;
@@ -205,7 +206,7 @@
         }
 
         .add-event-btn {
-            background: #28a745;
+            background: #FF9900;
             color: white;
             border: none;
             padding: 8px 15px;
@@ -217,7 +218,7 @@
         }
 
         .add-event-btn:hover {
-            background: #218838;
+            background: #FF7700;
         }
 
         .modal {
@@ -286,7 +287,7 @@
         }
 
         .btn-primary {
-            background: #007bff;
+            background: #FF9900;
             color: white;
             border: none;
             padding: 12px 25px;
@@ -297,7 +298,99 @@
         }
 
         .btn-primary:hover {
-            background: #0056b3;
+            background: #FF7700;
+        }
+
+        .btn-secondary {
+            background: #232F3E;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+            margin: 5px;
+            transition: background 0.3s;
+        }
+
+        .btn-secondary:hover {
+            background: #131A22;
+        }
+
+        .btn-danger {
+            background: #d32f2f;
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-left: 10px;
+            transition: background 0.3s;
+        }
+
+        .btn-danger:hover {
+            background: #b71c1c;
+        }
+
+        .management-section {
+            padding: 20px 30px;
+            background: #f8f9fa;
+            border-bottom: 1px solid #e9ecef;
+            text-align: center;
+        }
+
+        .event-type-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 15px;
+        }
+
+        .event-type-item {
+            display: flex;
+            align-items: center;
+            background: white;
+            padding: 8px 12px;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .event-actions {
+            display: flex;
+            gap: 5px;
+            margin-top: 10px;
+        }
+
+        .edit-event-btn {
+            background: #FF9900;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 11px;
+            transition: background 0.3s;
+        }
+
+        .edit-event-btn:hover {
+            background: #FF7700;
+        }
+
+        .delete-event-btn {
+            background: #d32f2f;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 11px;
+            transition: background 0.3s;
+        }
+
+        .delete-event-btn:hover {
+            background: #b71c1c;
         }
 
         @media (max-width: 768px) {
@@ -359,8 +452,38 @@
             </div>
         </div>
 
+        <div class="management-section">
+            <h3>Calendar Management</h3>
+            <div>
+                <button class="btn-secondary" onclick="openEventTypesModal()">Manage Event Types</button>
+                <button class="btn-secondary" onclick="exportCalendar()">Export Calendar</button>
+                <button class="btn-secondary" onclick="importCalendar()">Import Calendar</button>
+                <input type="file" id="importFile" accept=".json" style="display: none;" onchange="handleImport(event)">
+            </div>
+            <div class="event-type-list" id="eventTypesList">
+                <!-- Event types will be displayed here -->
+            </div>
+        </div>
+
         <div class="calendar-grid" id="calendarGrid">
             <!-- Calendar months will be generated here -->
+        </div>
+    </div>
+
+    <!-- Event Types Management Modal -->
+    <div id="eventTypesModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Manage Event Types</h2>
+                <span class="close" onclick="closeEventTypesModal()">&times;</span>
+            </div>
+            <div id="eventTypesEditor">
+                <!-- Event types editor will be populated here -->
+            </div>
+            <div style="margin-top: 20px;">
+                <button class="btn-secondary" onclick="addNewEventType()">Add New Event Type</button>
+                <button class="btn-primary" onclick="saveEventTypes()">Save Changes</button>
+            </div>
         </div>
     </div>
 
@@ -402,11 +525,20 @@
 
     <script>
         let currentYear = 2025;
+        let eventTypes = {
+            offsite: { name: 'Offsites', color: '#e74c3c' },
+            documentation: { name: 'Documentation', color: '#3498db' },
+            planning: { name: 'Planning', color: '#f39c12' },
+            review: { name: 'Reviews', color: '#27ae60' },
+            training: { name: 'Training', color: '#9b59b6' },
+            deadline: { name: 'Deadlines', color: '#e67e22' }
+        };
         let events = {
             // Sample events - replace with your actual data
             2025: {
                 1: [
                     {
+                        id: 'evt_1',
                         title: "Q1 Planning Session",
                         date: "2025-01-15",
                         category: "planning",
@@ -415,6 +547,7 @@
                 ],
                 2: [
                     {
+                        id: 'evt_2',
                         title: "Documentation Review",
                         date: "2025-02-10",
                         category: "documentation",
@@ -423,6 +556,7 @@
                 ],
                 3: [
                     {
+                        id: 'evt_3',
                         title: "EMEA ISV SA Offsite",
                         date: "2025-03-20",
                         category: "offsite",
@@ -431,6 +565,7 @@
                 ],
                 4: [
                     {
+                        id: 'evt_4',
                         title: "Q1 Review Meeting",
                         date: "2025-04-05",
                         category: "review",
@@ -439,6 +574,7 @@
                 ],
                 5: [
                     {
+                        id: 'evt_5',
                         title: "Technical Training Week",
                         date: "2025-05-12",
                         category: "training",
@@ -447,6 +583,7 @@
                 ],
                 6: [
                     {
+                        id: 'evt_6',
                         title: "Mid-Year Documentation Deadline",
                         date: "2025-06-30",
                         category: "deadline",
@@ -463,6 +600,8 @@
 
         function initializeCalendar() {
             document.getElementById('currentYear').textContent = currentYear;
+            loadEventTypes();
+            renderEventTypesList();
             renderCalendar();
         }
 
@@ -534,11 +673,28 @@
             eventDescription.className = 'event-description';
             eventDescription.textContent = event.description;
 
+            const eventActions = document.createElement('div');
+            eventActions.className = 'event-actions';
+
+            const editBtn = document.createElement('button');
+            editBtn.className = 'edit-event-btn';
+            editBtn.textContent = 'Edit';
+            editBtn.onclick = () => editEvent(event);
+
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'delete-event-btn';
+            deleteBtn.textContent = 'Delete';
+            deleteBtn.onclick = () => deleteEvent(event);
+
+            eventActions.appendChild(editBtn);
+            eventActions.appendChild(deleteBtn);
+
             eventDiv.appendChild(eventTitle);
             eventDiv.appendChild(eventDate);
             if (event.description) {
                 eventDiv.appendChild(eventDescription);
             }
+            eventDiv.appendChild(eventActions);
 
             return eventDiv;
         }
@@ -555,19 +711,239 @@
             renderCalendar();
         }
 
-        function openModal(month) {
+        function openModal(month, eventToEdit = null) {
             const modal = document.getElementById('eventModal');
             modal.style.display = 'block';
             
-            // Set default date to first day of selected month
-            const defaultDate = `${currentYear}-${month.toString().padStart(2, '0')}-01`;
-            document.getElementById('eventDate').value = defaultDate;
+            if (eventToEdit) {
+                // Editing existing event
+                document.getElementById('eventTitle').value = eventToEdit.title;
+                document.getElementById('eventDate').value = eventToEdit.date;
+                document.getElementById('eventCategory').value = eventToEdit.category;
+                document.getElementById('eventDescription').value = eventToEdit.description || '';
+                document.getElementById('eventForm').dataset.editingId = eventToEdit.id;
+            } else {
+                // Adding new event
+                const defaultDate = `${currentYear}-${month.toString().padStart(2, '0')}-01`;
+                document.getElementById('eventDate').value = defaultDate;
+                delete document.getElementById('eventForm').dataset.editingId;
+            }
+            
+            updateEventCategoryOptions();
         }
 
         function closeModal() {
             const modal = document.getElementById('eventModal');
             modal.style.display = 'none';
             document.getElementById('eventForm').reset();
+            delete document.getElementById('eventForm').dataset.editingId;
+        }
+
+        function updateEventCategoryOptions() {
+            const categorySelect = document.getElementById('eventCategory');
+            categorySelect.innerHTML = '';
+            
+            Object.keys(eventTypes).forEach(key => {
+                const option = document.createElement('option');
+                option.value = key;
+                option.textContent = eventTypes[key].name;
+                categorySelect.appendChild(option);
+            });
+        }
+
+        function editEvent(event) {
+            const eventDate = new Date(event.date);
+            const month = eventDate.getMonth() + 1;
+            openModal(month, event);
+        }
+
+        function deleteEvent(event) {
+            if (confirm(`Are you sure you want to delete "${event.title}"?`)) {
+                const eventDate = new Date(event.date);
+                const month = eventDate.getMonth() + 1;
+                const year = eventDate.getFullYear();
+                
+                if (events[year] && events[year][month]) {
+                    events[year][month] = events[year][month].filter(e => e.id !== event.id);
+                    saveEvents();
+                    renderCalendar();
+                }
+            }
+        }
+
+        // Event Types Management
+        function openEventTypesModal() {
+            const modal = document.getElementById('eventTypesModal');
+            modal.style.display = 'block';
+            renderEventTypesEditor();
+        }
+
+        function closeEventTypesModal() {
+            const modal = document.getElementById('eventTypesModal');
+            modal.style.display = 'none';
+        }
+
+        function renderEventTypesEditor() {
+            const editor = document.getElementById('eventTypesEditor');
+            editor.innerHTML = '';
+
+            Object.keys(eventTypes).forEach(key => {
+                const typeDiv = document.createElement('div');
+                typeDiv.style.marginBottom = '15px';
+                typeDiv.style.padding = '10px';
+                typeDiv.style.border = '1px solid #ddd';
+                typeDiv.style.borderRadius = '5px';
+
+                typeDiv.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <input type="text" value="${eventTypes[key].name}" 
+                               onchange="updateEventTypeName('${key}', this.value)"
+                               style="flex: 1; padding: 5px;">
+                        <input type="color" value="${eventTypes[key].color}" 
+                               onchange="updateEventTypeColor('${key}', this.value)"
+                               style="width: 50px;">
+                        <button class="btn-danger" onclick="deleteEventType('${key}')">Delete</button>
+                    </div>
+                `;
+
+                editor.appendChild(typeDiv);
+            });
+        }
+
+        function updateEventTypeName(key, newName) {
+            eventTypes[key].name = newName;
+        }
+
+        function updateEventTypeColor(key, newColor) {
+            eventTypes[key].color = newColor;
+        }
+
+        function addNewEventType() {
+            const key = prompt('Enter a unique key for the new event type (lowercase, no spaces):');
+            if (key && !eventTypes[key]) {
+                const name = prompt('Enter the display name for this event type:');
+                if (name) {
+                    eventTypes[key] = {
+                        name: name,
+                        color: '#' + Math.floor(Math.random()*16777215).toString(16)
+                    };
+                    renderEventTypesEditor();
+                }
+            } else if (eventTypes[key]) {
+                alert('This key already exists. Please choose a different one.');
+            }
+        }
+
+        function deleteEventType(key) {
+            if (confirm(`Are you sure you want to delete the "${eventTypes[key].name}" event type?`)) {
+                delete eventTypes[key];
+                renderEventTypesEditor();
+            }
+        }
+
+        function saveEventTypes() {
+            // Update CSS for new event types
+            updateEventTypeStyles();
+            localStorage.setItem('emeaISVSAEventTypes', JSON.stringify(eventTypes));
+            renderEventTypesList();
+            closeEventTypesModal();
+            renderCalendar();
+        }
+
+        function updateEventTypeStyles() {
+            let styleElement = document.getElementById('dynamicEventStyles');
+            if (!styleElement) {
+                styleElement = document.createElement('style');
+                styleElement.id = 'dynamicEventStyles';
+                document.head.appendChild(styleElement);
+            }
+
+            let css = '';
+            Object.keys(eventTypes).forEach(key => {
+                css += `
+                    .event.${key} {
+                        border-left-color: ${eventTypes[key].color};
+                        background: ${eventTypes[key].color}15;
+                    }
+                `;
+            });
+
+            styleElement.textContent = css;
+        }
+
+        function renderEventTypesList() {
+            const list = document.getElementById('eventTypesList');
+            list.innerHTML = '';
+
+            Object.keys(eventTypes).forEach(key => {
+                const item = document.createElement('div');
+                item.className = 'event-type-item';
+                item.innerHTML = `
+                    <div class="legend-color" style="background: ${eventTypes[key].color};"></div>
+                    <span>${eventTypes[key].name}</span>
+                `;
+                list.appendChild(item);
+            });
+        }
+
+        // Import/Export functionality
+        function exportCalendar() {
+            const data = {
+                events: events,
+                eventTypes: eventTypes,
+                exportDate: new Date().toISOString()
+            };
+
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `emea-isv-sa-calendar-${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        function importCalendar() {
+            document.getElementById('importFile').click();
+        }
+
+        function handleImport(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const data = JSON.parse(e.target.result);
+                        if (data.events) events = data.events;
+                        if (data.eventTypes) eventTypes = data.eventTypes;
+                        
+                        saveEvents();
+                        saveEventTypes();
+                        updateEventTypeStyles();
+                        renderEventTypesList();
+                        renderCalendar();
+                        
+                        alert('Calendar imported successfully!');
+                    } catch (error) {
+                        alert('Error importing calendar: Invalid file format');
+                    }
+                };
+                reader.readAsText(file);
+            }
+        }
+
+        function saveEvents() {
+            localStorage.setItem('emeaISVSAEvents', JSON.stringify(events));
+        }
+
+        function loadEventTypes() {
+            const savedEventTypes = localStorage.getItem('emeaISVSAEventTypes');
+            if (savedEventTypes) {
+                eventTypes = JSON.parse(savedEventTypes);
+            }
+            updateEventTypeStyles();
         }
 
         document.getElementById('eventForm').addEventListener('submit', function(e) {
@@ -577,6 +953,7 @@
             const date = document.getElementById('eventDate').value;
             const category = document.getElementById('eventCategory').value;
             const description = document.getElementById('eventDescription').value;
+            const editingId = this.dataset.editingId;
             
             const eventDate = new Date(date);
             const month = eventDate.getMonth() + 1;
@@ -590,8 +967,27 @@
                 events[year][month] = [];
             }
             
-            // Add the new event
+            if (editingId) {
+                // Update existing event
+                let eventFound = false;
+                for (let y in events) {
+                    for (let m in events[y]) {
+                        const eventIndex = events[y][m].findIndex(e => e.id === editingId);
+                        if (eventIndex !== -1) {
+                            // Remove from old location
+                            events[y][m].splice(eventIndex, 1);
+                            eventFound = true;
+                            break;
+                        }
+                    }
+                    if (eventFound) break;
+                }
+            }
+            
+            // Add the event (new or updated)
+            const eventId = editingId || 'evt_' + Date.now();
             events[year][month].push({
+                id: eventId,
                 title: title,
                 date: date,
                 category: category,
@@ -601,9 +997,7 @@
             // Sort events by date
             events[year][month].sort((a, b) => new Date(a.date) - new Date(b.date));
             
-            // Save to localStorage
-            localStorage.setItem('emeaISVSAEvents', JSON.stringify(events));
-            
+            saveEvents();
             closeModal();
             renderCalendar();
         });
@@ -618,9 +1012,13 @@
 
         // Close modal when clicking outside
         window.onclick = function(event) {
-            const modal = document.getElementById('eventModal');
-            if (event.target === modal) {
+            const eventModal = document.getElementById('eventModal');
+            const typesModal = document.getElementById('eventTypesModal');
+            if (event.target === eventModal) {
                 closeModal();
+            }
+            if (event.target === typesModal) {
+                closeEventTypesModal();
             }
         }
 
