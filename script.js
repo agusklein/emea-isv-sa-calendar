@@ -1,3 +1,380 @@
+// 🤖 AUTO-GENERATED DATA - Last updated: 2025-08-25T15:05:37.562Z
+// Source: Manual Google Sheets Sync
+// Events: 37 events loaded from spreadsheet
+const STATIC_EVENTS = [
+  {
+    "date": "2025-09-15",
+    "title": "OP2 Prep",
+    "description": "Start preparing by beginning of September",
+    "type": "meeting",
+    "location": "",
+    "month": 8,
+    "year": 2025,
+    "originalWhen": "September 2025"
+  },
+  {
+    "date": "2025-09-15",
+    "title": "AWSome Awards Nominations Review",
+    "description": "To be done in the last month of each quarter",
+    "type": "meeting",
+    "location": "",
+    "month": 8,
+    "year": 2025,
+    "originalWhen": "September 2025"
+  },
+  {
+    "date": "2025-09-15",
+    "title": "Resource Allocation Review",
+    "description": "To check SAs assignation of accounts and HC split per area",
+    "type": "meeting",
+    "location": "",
+    "month": 8,
+    "year": 2025,
+    "originalWhen": "September 2025"
+  },
+  {
+    "date": "2025-11-15",
+    "title": "OP2",
+    "description": "To be delivered in November",
+    "type": "meeting",
+    "location": "",
+    "month": 10,
+    "year": 2025,
+    "originalWhen": "November 2025"
+  },
+  {
+    "date": "2025-12-15",
+    "title": "OLR Prep",
+    "description": "At least 1 month before OLR",
+    "type": "meeting",
+    "location": "",
+    "month": 11,
+    "year": 2025,
+    "originalWhen": "December 2025"
+  },
+  {
+    "date": "2025-12-15",
+    "title": "AWSome Awards Nominations Review",
+    "description": "To be done in the last month of each quarter",
+    "type": "meeting",
+    "location": "",
+    "month": 11,
+    "year": 2025,
+    "originalWhen": "December 2025"
+  },
+  {
+    "date": "2025-12-15",
+    "title": "Re:Invent (1-week Event)",
+    "description": "",
+    "type": "meeting",
+    "location": "",
+    "month": 11,
+    "year": 2025,
+    "originalWhen": "December 2025"
+  },
+  {
+    "date": "2025-12-15",
+    "title": "Post Re:Invent (Re-Caps)",
+    "description": "Mid-December after the event",
+    "type": "meeting",
+    "location": "",
+    "month": 11,
+    "year": 2025,
+    "originalWhen": "December 2025"
+  },
+  {
+    "date": "2025-12-15",
+    "title": "Resource Allocation Review",
+    "description": "To check SAs assignation of accounts and HC split per area",
+    "type": "meeting",
+    "location": "",
+    "month": 11,
+    "year": 2025,
+    "originalWhen": "December 2025"
+  },
+  {
+    "date": "2026-01-15",
+    "title": "H2 Retrospective of each area",
+    "description": "To be reviewed during the offsite",
+    "type": "meeting",
+    "location": "",
+    "month": 0,
+    "year": 2026,
+    "originalWhen": "January 2026"
+  },
+  {
+    "date": "2026-01-15",
+    "title": "EMEA ISV Managers Offsite",
+    "description": "Happening at the end of the month or beginning of Feb",
+    "type": "meeting",
+    "location": "",
+    "month": 0,
+    "year": 2026,
+    "originalWhen": "January 2026"
+  },
+  {
+    "date": "2026-02-15",
+    "title": "Technical Account Plans",
+    "description": "",
+    "type": "meeting",
+    "location": "",
+    "month": 1,
+    "year": 2026,
+    "originalWhen": "February 2026"
+  },
+  {
+    "date": "2026-03-15",
+    "title": "AWS Summits per Area",
+    "description": "Identification and Mapping of all the summits",
+    "type": "meeting",
+    "location": "",
+    "month": 2,
+    "year": 2026,
+    "originalWhen": "March 2026"
+  },
+  {
+    "date": "2026-03-15",
+    "title": "AWSome Awards Nominations Review",
+    "description": "To be done in the last month of each quarter",
+    "type": "meeting",
+    "location": "",
+    "month": 2,
+    "year": 2026,
+    "originalWhen": "March 2026"
+  },
+  {
+    "date": "2026-03-15",
+    "title": "Resource Allocation Review",
+    "description": "To check SAs assignation of accounts and HC split per area",
+    "type": "meeting",
+    "location": "",
+    "month": 2,
+    "year": 2026,
+    "originalWhen": "March 2026"
+  },
+  {
+    "date": "2026-04-15",
+    "title": "OP1 Prep",
+    "description": "Start preparing by mid of April",
+    "type": "meeting",
+    "location": "",
+    "month": 3,
+    "year": 2026,
+    "originalWhen": "April 2026"
+  },
+  {
+    "date": "2026-04-15",
+    "title": "ISV SA QBR",
+    "description": "",
+    "type": "meeting",
+    "location": "",
+    "month": 3,
+    "year": 2026,
+    "originalWhen": "April 2026"
+  },
+  {
+    "date": "2026-05-15",
+    "title": "Re:Invent (Preparation, STO)",
+    "description": "Identify STO and work on the following months",
+    "type": "meeting",
+    "location": "",
+    "month": 4,
+    "year": 2026,
+    "originalWhen": "May 2026"
+  },
+  {
+    "date": "2026-06-15",
+    "title": "EMEA ISV Managers Offsite",
+    "description": "",
+    "type": "meeting",
+    "location": "",
+    "month": 5,
+    "year": 2026,
+    "originalWhen": "June 2026"
+  },
+  {
+    "date": "2026-06-15",
+    "title": "H1 Retrospective of each area",
+    "description": "To be reviewed during the offsite",
+    "type": "meeting",
+    "location": "",
+    "month": 5,
+    "year": 2026,
+    "originalWhen": "June 2026"
+  },
+  {
+    "date": "2026-06-15",
+    "title": "OP1",
+    "description": "To be delivered in June",
+    "type": "meeting",
+    "location": "",
+    "month": 5,
+    "year": 2026,
+    "originalWhen": "June 2026"
+  },
+  {
+    "date": "2026-06-15",
+    "title": "OLR Prep",
+    "description": "At least 1 month before OLR",
+    "type": "meeting",
+    "location": "",
+    "month": 5,
+    "year": 2026,
+    "originalWhen": "June 2026"
+  },
+  {
+    "date": "2026-06-15",
+    "title": "AWSome Awards Nominations Review",
+    "description": "To be done in the last month of each quarter",
+    "type": "meeting",
+    "location": "",
+    "month": 5,
+    "year": 2026,
+    "originalWhen": "June 2026"
+  },
+  {
+    "date": "2026-07-15",
+    "title": "OLR (Johan's Level)",
+    "description": "After this Johan needs to participate in Miguel's OLR",
+    "type": "meeting",
+    "location": "",
+    "month": 6,
+    "year": 2026,
+    "originalWhen": "July 2026"
+  },
+  {
+    "date": "2026-07-15",
+    "title": "ISV SA QBR",
+    "description": "",
+    "type": "meeting",
+    "location": "",
+    "month": 6,
+    "year": 2026,
+    "originalWhen": "July 2026"
+  },
+  {
+    "date": "2026-07-15",
+    "title": "Review Technical Account Plans",
+    "description": "Check during the middle of the year to see progression and adjustment",
+    "type": "meeting",
+    "location": "",
+    "month": 6,
+    "year": 2026,
+    "originalWhen": "July 2026"
+  },
+  {
+    "date": "2026-07-15",
+    "title": "Resource Allocation Review",
+    "description": "To check SAs assignation of accounts and HC split per area",
+    "type": "meeting",
+    "location": "",
+    "month": 6,
+    "year": 2026,
+    "originalWhen": "July 2026"
+  },
+  {
+    "date": "2026-09-15",
+    "title": "OP2 Prep",
+    "description": "To be delivered in November",
+    "type": "meeting",
+    "location": "",
+    "month": 8,
+    "year": 2026,
+    "originalWhen": "September 2026"
+  },
+  {
+    "date": "2026-09-15",
+    "title": "AWSome Awards Nominations Review",
+    "description": "To be done in the last month of each quarter",
+    "type": "meeting",
+    "location": "",
+    "month": 8,
+    "year": 2026,
+    "originalWhen": "September 2026"
+  },
+  {
+    "date": "2026-09-15",
+    "title": "Resource Allocation Review",
+    "description": "To check SAs assignation of accounts and HC split per area",
+    "type": "meeting",
+    "location": "",
+    "month": 8,
+    "year": 2026,
+    "originalWhen": "September 2026"
+  },
+  {
+    "date": "2026-10-15",
+    "title": "ISV SA QBR",
+    "description": "",
+    "type": "meeting",
+    "location": "",
+    "month": 9,
+    "year": 2026,
+    "originalWhen": "October 2026"
+  },
+  {
+    "date": "2026-11-15",
+    "title": "OP2",
+    "description": "To be delivered in November",
+    "type": "meeting",
+    "location": "",
+    "month": 10,
+    "year": 2026,
+    "originalWhen": "November 2026"
+  },
+  {
+    "date": "2026-12-15",
+    "title": "OLR Prep",
+    "description": "At least 1 month before OLR",
+    "type": "meeting",
+    "location": "",
+    "month": 11,
+    "year": 2026,
+    "originalWhen": "December 2026"
+  },
+  {
+    "date": "2026-12-15",
+    "title": "AWSome Awards Nominations Review",
+    "description": "To be done in the last month of each quarter",
+    "type": "meeting",
+    "location": "",
+    "month": 11,
+    "year": 2026,
+    "originalWhen": "December 2026"
+  },
+  {
+    "date": "2026-12-15",
+    "title": "Re:Invent (1-week Event)",
+    "description": "",
+    "type": "meeting",
+    "location": "",
+    "month": 11,
+    "year": 2026,
+    "originalWhen": "December 2026"
+  },
+  {
+    "date": "2026-12-15",
+    "title": "Post Re:Invent (Re-Caps)",
+    "description": "Mid-December after the event",
+    "type": "meeting",
+    "location": "",
+    "month": 11,
+    "year": 2026,
+    "originalWhen": "December 2026"
+  },
+  {
+    "date": "2026-12-15",
+    "title": "Resource Allocation Review",
+    "description": "To check SAs assignation of accounts and HC split per area",
+    "type": "meeting",
+    "location": "",
+    "month": 11,
+    "year": 2026,
+    "originalWhen": "December 2026"
+  }
+];
+const LAST_SHEETS_UPDATE = '2025-08-25T15:05:37.562Z';
+
 // Global variables
 let currentYear = 2025;
 let recurringEvents = []; // Changed from events to recurringEvents
@@ -196,51 +573,71 @@ function getMonthName(monthIndex) {
     return monthNames[monthIndex];
 }
 
-// Fallback sample recurring events (will be replaced by automated monthly sync)
+// Load events from static data (updated from Google Sheets)
 function loadSampleRecurringEvents() {
-    console.log('Loading static recurring events from last monthly sync...');
+    console.log('Loading static events from last Google Sheets sync...');
+    console.log('Last updated:', LAST_SHEETS_UPDATE);
     
-    // This data will be automatically updated by GitHub Actions monthly sync
-    recurringEvents = [
-        {
-            month: 6, // July (0-based index)
-            title: 'OLR Johan\'s Level',
-            description: 'Quarterly leadership review session with Johan - happens every July',
-            type: 'meeting',
-            location: 'Virtual'
-        },
-        {
-            month: 0, // January (0-based index)
-            title: 'OLR Johan\'s Level',
-            description: 'Quarterly leadership review session with Johan - happens every January',
-            type: 'meeting',
-            location: 'Virtual'
-        },
-        {
-            month: 8, // September (0-based index)
-            title: 'OP2 Prep',
-            description: 'Annual OP2 preparation and planning session - happens every September',
-            type: 'planning',
-            location: 'London'
-        },
-        {
-            month: 11, // December (0-based index)
-            title: 'AWS re:Invent',
-            description: 'Annual AWS conference - happens every December',
-            type: 'conference',
-            location: 'Las Vegas, NV'
-        },
-        {
-            month: 2, // March (0-based index)
-            title: 'Q1 Business Review',
-            description: 'Quarterly business review - happens every March',
-            type: 'meeting',
-            location: 'Dublin'
-        }
-    ];
+    if (typeof STATIC_EVENTS !== 'undefined' && STATIC_EVENTS.length > 0) {
+        // Convert static events to the format expected by the website
+        generatedEvents = STATIC_EVENTS;
+        console.log(`Loaded ${generatedEvents.length} static events from sheets sync`);
+        
+        // Also create recurring events structure for calendar display
+        recurringEvents = [];
+        const monthGroups = {};
+        
+        STATIC_EVENTS.forEach(event => {
+            const monthKey = event.month;
+            if (!monthGroups[monthKey]) {
+                monthGroups[monthKey] = [];
+            }
+            monthGroups[monthKey].push(event);
+        });
+        
+        // Create recurring events for calendar display
+        Object.keys(monthGroups).forEach(monthKey => {
+            const month = parseInt(monthKey);
+            const eventsInMonth = monthGroups[monthKey];
+            
+            eventsInMonth.forEach(event => {
+                recurringEvents.push({
+                    month: month,
+                    title: event.title,
+                    description: event.description,
+                    type: event.type,
+                    location: event.location,
+                    year: event.year,
+                    originalWhen: event.originalWhen
+                });
+            });
+        });
+        
+    } else {
+        // Ultimate fallback if no static data available
+        generatedEvents = [
+            {
+                date: '2025-09-15',
+                title: 'Sample Event - September 2025',
+                description: 'This is a sample event',
+                type: 'meeting',
+                location: 'Virtual',
+                month: 8,
+                year: 2025
+            }
+        ];
+        recurringEvents = [
+            {
+                month: 8,
+                title: 'Sample Event - September 2025',
+                description: 'This is a sample event',
+                type: 'meeting',
+                location: 'Virtual'
+            }
+        ];
+        console.log('Using ultimate fallback sample data');
+    }
     
-    console.log('Sample recurring events loaded (will be updated monthly):', recurringEvents);
-    generateEventsForDisplay();
     displayUpcomingEvents();
     generateCalendar();
 }
@@ -297,33 +694,37 @@ function generateCalendar() {
     const endMonth = 11; // Always end at December
     
     container.innerHTML = '';
+    container.className = 'months-grid'; // Change to grid layout
     
     for (let month = startMonth; month <= endMonth; month++) {
-        const monthSection = createMonthSection(currentYear, month);
-        container.appendChild(monthSection);
+        const monthCard = createMonthCard(currentYear, month);
+        container.appendChild(monthCard);
     }
 }
 
-// Create individual month section
-function createMonthSection(year, month) {
+// Create individual month card (updated for grid layout)
+function createMonthCard(year, month) {
     const monthNames = [
         'January', 'February', 'March', 'April', 'May', 'June',
         'July', 'August', 'September', 'October', 'November', 'December'
     ];
     
-    const monthSection = document.createElement('div');
-    monthSection.className = 'month-section';
+    const monthCard = document.createElement('div');
+    monthCard.className = 'month-card';
     
     // Month header
     const header = document.createElement('div');
     header.className = 'month-header';
     header.textContent = `${monthNames[month]} ${year}`;
-    monthSection.appendChild(header);
+    monthCard.appendChild(header);
     
-    // Get recurring events for this month
-    const monthEvents = recurringEvents.filter(event => event.month === month);
+    // Get events for this month and year
+    const monthEvents = generatedEvents.filter(event => {
+        const eventDate = new Date(event.date);
+        return eventDate.getFullYear() === year && eventDate.getMonth() === month;
+    });
     
-    console.log(`${monthNames[month]} ${year}: Found ${monthEvents.length} recurring events`, monthEvents);
+    console.log(`${monthNames[month]} ${year}: Found ${monthEvents.length} events`, monthEvents);
     
     // Month events container
     const eventsContainer = document.createElement('div');
@@ -332,35 +733,41 @@ function createMonthSection(year, month) {
     if (monthEvents.length === 0) {
         const noEvents = document.createElement('div');
         noEvents.className = 'no-events-month';
-        noEvents.textContent = 'No events scheduled for this month';
+        noEvents.textContent = 'No events scheduled';
         eventsContainer.appendChild(noEvents);
     } else {
+        // Sort events by date within the month
+        monthEvents.sort((a, b) => new Date(a.date) - new Date(b.date));
+        
         monthEvents.forEach(event => {
-            const eventElement = createMonthEventElement(event, year);
+            const eventElement = createMonthEventElement(event);
             eventsContainer.appendChild(eventElement);
         });
     }
     
-    monthSection.appendChild(eventsContainer);
-    return monthSection;
+    monthCard.appendChild(eventsContainer);
+    return monthCard;
 }
 
-// Create individual event element for month view
-function createMonthEventElement(recurringEvent, year) {
+// Create individual event element for month view (updated for grid layout)
+function createMonthEventElement(event) {
     const eventDiv = document.createElement('div');
     eventDiv.className = 'month-event';
     
+    // Extract year from the event
+    const eventYear = event.year || new Date(event.date).getFullYear();
+    
     eventDiv.innerHTML = `
         <div class="event-date-day">
-            <span class="day">${getMonthName(recurringEvent.month)}</span>
-            <span class="weekday">${year}</span>
+            <span class="day">${eventYear}</span>
+            <span class="weekday">${getMonthName(event.month).substring(0, 3)}</span>
         </div>
         <div class="event-details">
-            <div class="title">${recurringEvent.title}</div>
-            <div class="description">${recurringEvent.description}</div>
+            <div class="title">${event.title}</div>
+            <div class="description">${event.description}</div>
             <div class="meta">
-                ${recurringEvent.location ? `<span>📍 ${recurringEvent.location}</span>` : ''}
-                <span class="event-type-badge">${capitalizeFirst(recurringEvent.type)}</span>
+                ${event.location ? `<span>📍 ${event.location}</span>` : ''}
+                <span class="event-type-badge">${capitalizeFirst(event.type)}</span>
             </div>
         </div>
     `;

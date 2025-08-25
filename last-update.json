@@ -1,0 +1,192 @@
+{
+  "lastUpdate": "2025-08-25T15:05:37.562Z",
+  "eventsCount": 37,
+  "source": "Manual Google Sheets Sync",
+  "events": [
+    {
+      "title": "OP2 Prep",
+      "when": "September 2025",
+      "date": "2025-09-15"
+    },
+    {
+      "title": "AWSome Awards Nominations Review",
+      "when": "September 2025",
+      "date": "2025-09-15"
+    },
+    {
+      "title": "Resource Allocation Review",
+      "when": "September 2025",
+      "date": "2025-09-15"
+    },
+    {
+      "title": "OP2",
+      "when": "November 2025",
+      "date": "2025-11-15"
+    },
+    {
+      "title": "OLR Prep",
+      "when": "December 2025",
+      "date": "2025-12-15"
+    },
+    {
+      "title": "AWSome Awards Nominations Review",
+      "when": "December 2025",
+      "date": "2025-12-15"
+    },
+    {
+      "title": "Re:Invent (1-week Event)",
+      "when": "December 2025",
+      "date": "2025-12-15"
+    },
+    {
+      "title": "Post Re:Invent (Re-Caps)",
+      "when": "December 2025",
+      "date": "2025-12-15"
+    },
+    {
+      "title": "Resource Allocation Review",
+      "when": "December 2025",
+      "date": "2025-12-15"
+    },
+    {
+      "title": "H2 Retrospective of each area",
+      "when": "January 2026",
+      "date": "2026-01-15"
+    },
+    {
+      "title": "EMEA ISV Managers Offsite",
+      "when": "January 2026",
+      "date": "2026-01-15"
+    },
+    {
+      "title": "Technical Account Plans",
+      "when": "February 2026",
+      "date": "2026-02-15"
+    },
+    {
+      "title": "AWS Summits per Area",
+      "when": "March 2026",
+      "date": "2026-03-15"
+    },
+    {
+      "title": "AWSome Awards Nominations Review",
+      "when": "March 2026",
+      "date": "2026-03-15"
+    },
+    {
+      "title": "Resource Allocation Review",
+      "when": "March 2026",
+      "date": "2026-03-15"
+    },
+    {
+      "title": "OP1 Prep",
+      "when": "April 2026",
+      "date": "2026-04-15"
+    },
+    {
+      "title": "ISV SA QBR",
+      "when": "April 2026",
+      "date": "2026-04-15"
+    },
+    {
+      "title": "Re:Invent (Preparation, STO)",
+      "when": "May 2026",
+      "date": "2026-05-15"
+    },
+    {
+      "title": "EMEA ISV Managers Offsite",
+      "when": "June 2026",
+      "date": "2026-06-15"
+    },
+    {
+      "title": "H1 Retrospective of each area",
+      "when": "June 2026",
+      "date": "2026-06-15"
+    },
+    {
+      "title": "OP1",
+      "when": "June 2026",
+      "date": "2026-06-15"
+    },
+    {
+      "title": "OLR Prep",
+      "when": "June 2026",
+      "date": "2026-06-15"
+    },
+    {
+      "title": "AWSome Awards Nominations Review",
+      "when": "June 2026",
+      "date": "2026-06-15"
+    },
+    {
+      "title": "OLR (Johan's Level)",
+      "when": "July 2026",
+      "date": "2026-07-15"
+    },
+    {
+      "title": "ISV SA QBR",
+      "when": "July 2026",
+      "date": "2026-07-15"
+    },
+    {
+      "title": "Review Technical Account Plans",
+      "when": "July 2026",
+      "date": "2026-07-15"
+    },
+    {
+      "title": "Resource Allocation Review",
+      "when": "July 2026",
+      "date": "2026-07-15"
+    },
+    {
+      "title": "OP2 Prep",
+      "when": "September 2026",
+      "date": "2026-09-15"
+    },
+    {
+      "title": "AWSome Awards Nominations Review",
+      "when": "September 2026",
+      "date": "2026-09-15"
+    },
+    {
+      "title": "Resource Allocation Review",
+      "when": "September 2026",
+      "date": "2026-09-15"
+    },
+    {
+      "title": "ISV SA QBR",
+      "when": "October 2026",
+      "date": "2026-10-15"
+    },
+    {
+      "title": "OP2",
+      "when": "November 2026",
+      "date": "2026-11-15"
+    },
+    {
+      "title": "OLR Prep",
+      "when": "December 2026",
+      "date": "2026-12-15"
+    },
+    {
+      "title": "AWSome Awards Nominations Review",
+      "when": "December 2026",
+      "date": "2026-12-15"
+    },
+    {
+      "title": "Re:Invent (1-week Event)",
+      "when": "December 2026",
+      "date": "2026-12-15"
+    },
+    {
+      "title": "Post Re:Invent (Re-Caps)",
+      "when": "December 2026",
+      "date": "2026-12-15"
+    },
+    {
+      "title": "Resource Allocation Review",
+      "when": "December 2026",
+      "date": "2026-12-15"
+    }
+  ]
+}
