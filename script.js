@@ -8,31 +8,10 @@ const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tq
 
 // Initialize the application
 document.addEventListener('DOMContentLoaded', function() {
-    initializeNavigation();
+    console.log('Initializing EMEA ISV SA Managers Annual Clock...');
     initializeCalendarControls();
     loadEventsFromSheet();
-    generateCalendar();
 });
-
-// Navigation functionality
-function initializeNavigation() {
-    const navButtons = document.querySelectorAll('.nav-btn');
-    const sections = document.querySelectorAll('.content-section');
-
-    navButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            const targetSection = button.getAttribute('data-section');
-            
-            // Update active nav button
-            navButtons.forEach(btn => btn.classList.remove('active'));
-            button.classList.add('active');
-            
-            // Show target section
-            sections.forEach(section => section.classList.remove('active'));
-            document.getElementById(targetSection).classList.add('active');
-        });
-    });
-}
 
 // Calendar controls
 function initializeCalendarControls() {
@@ -55,6 +34,7 @@ function initializeCalendarControls() {
 
 // Load events from Google Sheets
 async function loadEventsFromSheet() {
+    console.log('Loading events from Google Sheets...');
     try {
         const response = await fetch(SHEET_URL);
         const text = await response.text();
@@ -64,6 +44,8 @@ async function loadEventsFromSheet() {
         const data = JSON.parse(jsonString);
         
         events = parseSheetData(data);
+        console.log(`Loaded ${events.length} events from Google Sheets`);
+        
         displayUpcomingEvents();
         generateCalendar();
         
@@ -81,12 +63,13 @@ function parseSheetData(data) {
     // Skip header row (index 0)
     for (let i = 1; i < rows.length; i++) {
         const row = rows[i];
-        if (row.c && row.c.length >= 3) {
+        if (row.c && row.c.length >= 2) {
             const event = {
                 date: row.c[0] ? parseSheetDate(row.c[0].v) : null,
                 title: row.c[1] ? row.c[1].v : '',
                 description: row.c[2] ? row.c[2].v : '',
-                type: row.c[3] ? row.c[3].v : 'other'
+                type: row.c[3] ? row.c[3].v.toLowerCase() : 'other',
+                location: row.c[4] ? row.c[4].v : ''
             };
             
             if (event.date && event.title) {
@@ -101,41 +84,65 @@ function parseSheetData(data) {
 // Parse date from Google Sheets format
 function parseSheetDate(dateValue) {
     if (typeof dateValue === 'string') {
+        // Handle various date formats
+        const date = new Date(dateValue);
+        if (!isNaN(date.getTime())) {
+            return date.toISOString().split('T')[0];
+        }
         return dateValue;
     } else if (typeof dateValue === 'number') {
-        // Google Sheets date serial number
+        // Google Sheets date serial number (days since December 30, 1899)
         const date = new Date((dateValue - 25569) * 86400 * 1000);
         return date.toISOString().split('T')[0];
     }
     return null;
 }
 
-// Fallback sample events
+// Fallback sample events for demonstration
 function loadSampleEvents() {
+    console.log('Loading sample events as fallback...');
     events = [
         {
             date: '2025-09-15',
-            title: 'AWS re:Invent 2025 Planning',
-            description: 'Initial planning session for AWS re:Invent 2025 ISV activities',
-            type: 'meeting'
+            title: 'AWS re:Invent 2025 Planning Session',
+            description: 'Initial planning and coordination session for AWS re:Invent 2025 ISV activities and partner engagement',
+            type: 'meeting',
+            location: 'Virtual'
         },
         {
-            date: '2025-10-01',
-            title: 'Q4 ISV Partner Review',
-            description: 'Quarterly business review with key ISV partners',
-            type: 'meeting'
+            date: '2025-09-30',
+            title: 'Q3 ISV Partner Business Review',
+            description: 'Quarterly business review with key ISV partners across EMEA region',
+            type: 'meeting',
+            location: 'London'
+        },
+        {
+            date: '2025-10-15',
+            title: 'ISV Technical Deep Dive Series',
+            description: 'Monthly technical session covering latest AWS services and ISV integration patterns',
+            type: 'training',
+            location: 'Virtual'
         },
         {
             date: '2025-11-01',
-            title: 'ISV Technical Deep Dive Series',
-            description: 'Monthly technical session with ISV partners',
-            type: 'training'
+            title: 'EMEA ISV SA All-Hands Meeting',
+            description: 'Regional all-hands meeting for EMEA ISV Solutions Architects',
+            type: 'meeting',
+            location: 'Dublin'
         },
         {
-            date: '2025-12-01',
+            date: '2025-12-02',
             title: 'AWS re:Invent 2025',
-            description: 'Annual AWS conference in Las Vegas',
-            type: 'conference'
+            description: 'Annual AWS conference in Las Vegas - ISV partner activities and sessions',
+            type: 'conference',
+            location: 'Las Vegas, NV'
+        },
+        {
+            date: '2026-01-15',
+            title: 'New Year ISV Strategy Planning',
+            description: 'Strategic planning session for 2026 ISV initiatives and partner programs',
+            type: 'meeting',
+            location: 'Virtual'
         }
     ];
     
@@ -157,6 +164,7 @@ function displayUpcomingEvents() {
     const noEventsMessage = document.getElementById('noEventsMessage');
     
     if (upcomingEvents.length === 0) {
+        container.innerHTML = '';
         container.style.display = 'none';
         noEventsMessage.style.display = 'block';
         return;
@@ -172,10 +180,11 @@ function displayUpcomingEvents() {
         return `
             <div class="event-card">
                 <div class="event-date">
-                    ${formatDate(event.date)} ${daysUntil > 0 ? `(in ${daysUntil} days)` : '(Today)'}
+                    ${formatDate(event.date)} ${daysUntil > 0 ? `(in ${daysUntil} days)` : daysUntil === 0 ? '(Today)' : ''}
                 </div>
                 <div class="event-title">${event.title}</div>
                 <div class="event-description">${event.description}</div>
+                ${event.location ? `<div class="event-location">📍 ${event.location}</div>` : ''}
                 <div class="event-type">${capitalizeFirst(event.type)}</div>
             </div>
         `;
@@ -186,7 +195,7 @@ function displayUpcomingEvents() {
 function generateCalendar() {
     const container = document.getElementById('monthsGrid');
     const startMonth = currentYear === 2025 ? 7 : 0; // Start from August 2025 (month 7)
-    const endMonth = currentYear === 2025 ? 11 : 11; // End at December
+    const endMonth = 11; // Always end at December
     
     container.innerHTML = '';
     
@@ -255,17 +264,27 @@ function createMonthCard(year, month) {
         
         if (dayEvents.length > 0) {
             dayCell.classList.add('has-event');
-            dayCell.title = dayEvents.map(event => event.title).join(', ');
+            if (dayEvents.length > 1) {
+                dayCell.classList.add('has-multiple-events');
+            }
+            
+            // Create tooltip with event details
+            const tooltip = document.createElement('div');
+            tooltip.className = 'event-tooltip';
+            tooltip.innerHTML = dayEvents.map(event => 
+                `<strong>${event.title}</strong>${event.location ? ` - ${event.location}` : ''}`
+            ).join('<br>');
+            dayCell.appendChild(tooltip);
         }
         
         grid.appendChild(dayCell);
     }
     
-    // Next month's leading days
+    // Next month's leading days to fill the grid
     const totalCells = grid.children.length - 7; // Subtract day headers
-    const remainingCells = 42 - totalCells; // 6 rows × 7 days = 42 cells
+    const remainingCells = Math.max(0, 42 - totalCells); // 6 rows × 7 days = 42 cells
     
-    for (let day = 1; day <= remainingCells; day++) {
+    for (let day = 1; day <= remainingCells && totalCells < 35; day++) {
         const dayCell = document.createElement('div');
         dayCell.className = 'day-cell other-month';
         dayCell.textContent = day;
@@ -292,5 +311,17 @@ function capitalizeFirst(str) {
     return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
-// Refresh data periodically (every 5 minutes)
-setInterval(loadEventsFromSheet, 5 * 60 * 1000);
+// Refresh data periodically (every 10 minutes)
+setInterval(() => {
+    console.log('Refreshing events data...');
+    loadEventsFromSheet();
+}, 10 * 60 * 1000);
+
+// Add some visual feedback when data is loading
+function showLoadingState() {
+    const upcomingContainer = document.getElementById('upcomingEventsGrid');
+    const calendarContainer = document.getElementById('monthsGrid');
+    
+    upcomingContainer.innerHTML = '<div class="loading-spinner">Loading upcoming events...</div>';
+    calendarContainer.innerHTML = '<div class="loading-spinner">Loading calendar...</div>';
+}
