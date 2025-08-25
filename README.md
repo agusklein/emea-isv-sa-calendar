@@ -3,20 +3,36 @@
 ## 🎯 Overview
 This website provides a comprehensive planning tool for EMEA ISV Solutions Architect Managers, displaying recurring annual events and upcoming milestones in a clean, AWS-branded interface.
 
-## 🤖 Automated Monthly Updates
-The website automatically syncs with Google Sheets data on the **last day of each month** at 23:00 UTC.
+## 🤖 Monthly Update System
+The website can be updated monthly with the latest Google Sheets data using the automated update script.
 
-### How It Works:
-1. **GitHub Action** runs monthly on the last day of each month
-2. **Fetches data** from the Google Spreadsheet
-3. **Updates the website code** with the latest event information
-4. **Commits changes** automatically to keep the site current
+### How to Update (Monthly Process):
 
-### Manual Trigger:
-You can also manually trigger the update process:
-1. Go to the **Actions** tab in GitHub
-2. Select **"Monthly Google Sheets Sync"**
-3. Click **"Run workflow"**
+1. **Run the Update Script:**
+   ```bash
+   node update-calendar.js
+   ```
+
+2. **Review Changes:**
+   - Check the updated `script.js` file
+   - Review `last-update.json` for summary
+
+3. **Commit and Push:**
+   ```bash
+   git add .
+   git commit -m "📅 Monthly update: Sync with Google Sheets (YYYY-MM-DD)"
+   git push origin main
+   ```
+
+4. **Verify Website:**
+   - Visit the live site to confirm updates
+
+### What the Update Script Does:
+- ✅ Fetches latest data from Google Spreadsheet
+- ✅ Parses recurring events by month
+- ✅ Updates `script.js` with static data
+- ✅ Creates `last-update.json` status file
+- ✅ Provides detailed logging and error handling
 
 ## 📊 Google Sheets Format
 The spreadsheet should have the following columns:
@@ -39,21 +55,18 @@ The spreadsheet should have the following columns:
 ```
 ├── index.html              # Main website
 ├── styles.css              # AWS-branded styling
-├── script.js               # Dynamic functionality
+├── script.js               # Dynamic functionality (updated by sync)
+├── update-calendar.js      # Monthly update script
 ├── last-update.json        # Update tracking (auto-generated)
-├── .github/
-│   ├── workflows/
-│   │   └── monthly-update.yml    # GitHub Action workflow
-│   └── scripts/
-│       └── update-from-sheets.js # Update script
+├── test.html               # Deployment test page
 └── README.md               # This file
 ```
 
 ## 🚀 Features:
 - ✅ **AWS Branding** - Official colors and styling
 - ✅ **Responsive Design** - Works on all devices
-- ✅ **Live Google Sheets Integration** - Real-time data loading
-- ✅ **Automated Monthly Sync** - Keeps static data current
+- ✅ **Live Google Sheets Integration** - Real-time data loading with fallback
+- ✅ **Monthly Sync Script** - Easy manual updates
 - ✅ **Recurring Events** - Events repeat annually
 - ✅ **Upcoming Events** - Shows next 90 days
 - ✅ **Monthly Calendar View** - Clean month-by-month display
@@ -61,24 +74,49 @@ The spreadsheet should have the following columns:
 ## 🔧 Technical Details:
 - **Frontend**: Pure HTML, CSS, JavaScript (no frameworks)
 - **Hosting**: GitHub Pages
-- **Data Source**: Google Sheets
-- **Automation**: GitHub Actions
-- **Update Frequency**: Monthly (last day of each month)
+- **Data Source**: Google Sheets (with static fallback)
+- **Update Method**: Manual script (run monthly)
+- **Fallback**: Static data embedded in JavaScript
 
 ## 📈 Update History:
 Check `last-update.json` for the most recent sync information, including:
 - Last update timestamp
 - Number of events processed
-- Data source confirmation
+- List of all events with their months
 
-## 🛠️ Maintenance:
-The system is designed to be **maintenance-free**. The monthly automation ensures:
-- Website stays current with spreadsheet changes
-- No manual intervention required
-- Automatic fallback to cached data if Google Sheets is unavailable
+## 🛠️ Monthly Maintenance:
+**Recommended Schedule**: Last day of each month
+
+1. Run `node update-calendar.js`
+2. Review the changes
+3. Commit and push to GitHub
+4. Verify the live website
+
+### Prerequisites:
+- Node.js installed locally
+- Access to the repository
+- Internet connection to fetch Google Sheets data
+
+## 🔍 Troubleshooting:
+- **Script fails**: Check internet connection and Google Sheets accessibility
+- **No events found**: Verify spreadsheet format and data
+- **Website not updating**: Clear browser cache, check GitHub Pages deployment
 
 ---
 
 **Live Website**: https://agusklein.github.io/emea-isv-sa-calendar/
 
 **Google Spreadsheet**: [View Source Data](https://docs.google.com/spreadsheets/d/1DOlgJyYL7w_p1kR4IKjHvn7E8Cw31YWKZ2WOt-b_aJs/edit?gid=0#gid=0)
+
+## 🎯 Quick Start for Monthly Updates:
+```bash
+# 1. Update from Google Sheets
+node update-calendar.js
+
+# 2. Commit changes
+git add .
+git commit -m "📅 Monthly sync: $(date +'%Y-%m-%d')"
+git push origin main
+
+# 3. Done! Website automatically updates
+```

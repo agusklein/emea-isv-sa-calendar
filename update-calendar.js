@@ -1,43 +1,43 @@
+#!/usr/bin/env node
+
+// Manual update script for EMEA ISV SA Calendar
+// Run this script monthly to sync with Google Sheets data
+
 const fs = require('fs');
-const fetch = require('node-fetch');
+const https = require('https');
 
 // Configuration
-const SHEET_ID = process.env.SHEET_ID || '1DOlgJyYL7w_p1kR4IKjHvn7E8Cw31YWKZ2WOt-b_aJs';
+const SHEET_ID = '1DOlgJyYL7w_p1kR4IKjHvn7E8Cw31YWKZ2WOt-b_aJs';
 const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Sheet1`;
 
-console.log('🚀 Starting monthly Google Sheets sync...');
+console.log('🚀 EMEA ISV SA Calendar - Manual Update Script');
+console.log('='.repeat(50));
 console.log(`📊 Reading from Sheet ID: ${SHEET_ID}`);
+console.log(`🕐 Started at: ${new Date().toISOString()}`);
+console.log('');
 
-async function main() {
-    try {
-        // Fetch data from Google Sheets
-        console.log('📥 Fetching data from Google Sheets...');
-        const response = await fetch(SHEET_URL);
-        
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        
-        const text = await response.text();
-        const jsonString = text.substring(47).slice(0, -2);
-        const data = JSON.parse(jsonString);
-        
-        // Parse the data
-        const recurringEvents = parseSheetData(data);
-        console.log(`✅ Successfully parsed ${recurringEvents.length} recurring events`);
-        
-        // Generate static data for the website
-        const staticData = generateStaticData(recurringEvents);
-        
-        // Update the JavaScript file with static data
-        updateJavaScriptFile(staticData);
-        
-        console.log('🎉 Monthly sync completed successfully!');
-        
-    } catch (error) {
-        console.error('❌ Error during monthly sync:', error);
-        process.exit(1);
-    }
+async function fetchGoogleSheets() {
+    return new Promise((resolve, reject) => {
+        https.get(SHEET_URL, (res) => {
+            let data = '';
+            
+            res.on('data', (chunk) => {
+                data += chunk;
+            });
+            
+            res.on('end', () => {
+                try {
+                    const jsonString = data.substring(47).slice(0, -2);
+                    const parsedData = JSON.parse(jsonString);
+                    resolve(parsedData);
+                } catch (error) {
+                    reject(error);
+                }
+            });
+        }).on('error', (error) => {
+            reject(error);
+        });
+    });
 }
 
 function parseSheetData(data) {
@@ -124,56 +124,21 @@ function getMonthName(monthIndex) {
     return monthNames[monthIndex];
 }
 
-function generateStaticData(recurringEvents) {
-    console.log('🏗️  Generating static data for website...');
-    
-    const currentDate = new Date();
-    const currentYear = currentDate.getFullYear();
-    
-    // Generate events for current year and next 2 years
-    const generatedEvents = [];
-    const yearsToGenerate = [currentYear, currentYear + 1, currentYear + 2];
-    
-    yearsToGenerate.forEach(year => {
-        recurringEvents.forEach(recurringEvent => {
-            const event = {
-                date: `${year}-${String(recurringEvent.month + 1).padStart(2, '0')}-15`,
-                title: recurringEvent.title,
-                description: recurringEvent.description,
-                type: recurringEvent.type,
-                location: recurringEvent.location,
-                month: recurringEvent.month,
-                year: year
-            };
-            generatedEvents.push(event);
-        });
-    });
-    
-    // Sort by date
-    generatedEvents.sort((a, b) => new Date(a.date) - new Date(b.date));
-    
-    console.log(`📅 Generated ${generatedEvents.length} events for ${yearsToGenerate.length} years`);
-    
-    return {
-        recurringEvents,
-        generatedEvents,
-        lastUpdated: currentDate.toISOString(),
-        updateSource: 'Google Sheets Monthly Sync'
-    };
-}
-
-function updateJavaScriptFile(staticData) {
+function updateJavaScriptFile(recurringEvents) {
+    console.log('');
     console.log('📝 Updating JavaScript file with new data...');
     
     const jsFilePath = 'script.js';
     let jsContent = fs.readFileSync(jsFilePath, 'utf8');
     
+    const currentDate = new Date();
+    
     // Create the static data injection
-    const staticDataString = `// 🤖 AUTO-GENERATED DATA - Last updated: ${staticData.lastUpdated}
-// Source: ${staticData.updateSource}
-const STATIC_RECURRING_EVENTS = ${JSON.stringify(staticData.recurringEvents, null, 2)};
-const STATIC_GENERATED_EVENTS = ${JSON.stringify(staticData.generatedEvents, null, 2)};
-const LAST_SHEETS_UPDATE = '${staticData.lastUpdated}';
+    const staticDataString = `// 🤖 AUTO-GENERATED DATA - Last updated: ${currentDate.toISOString()}
+// Source: Manual Google Sheets Sync
+// Events: ${recurringEvents.length} recurring events loaded
+const STATIC_RECURRING_EVENTS = ${JSON.stringify(recurringEvents, null, 2)};
+const LAST_SHEETS_UPDATE = '${currentDate.toISOString()}';
 
 `;
     
@@ -196,12 +161,19 @@ function loadSampleRecurringEvents() {
     console.log('Loading static recurring events from last Google Sheets sync...');
     console.log('Last updated:', LAST_SHEETS_UPDATE);
     
-    if (STATIC_RECURRING_EVENTS && STATIC_RECURRING_EVENTS.length > 0) {
+    if (typeof STATIC_RECURRING_EVENTS !== 'undefined' && STATIC_RECURRING_EVENTS.length > 0) {
         recurringEvents = STATIC_RECURRING_EVENTS;
         console.log(\`Loaded \${recurringEvents.length} static recurring events from sheets sync\`);
     } else {
         // Ultimate fallback if no static data available
         recurringEvents = [
+            {
+                month: 8, // September
+                title: 'OP2 Prep',
+                description: 'Annual OP2 preparation and planning session - happens every September',
+                type: 'planning',
+                location: 'London'
+            },
             {
                 month: 6, // July
                 title: 'Sample Event - July',
@@ -232,14 +204,58 @@ function loadSampleRecurringEvents() {
     
     // Also update a status file for tracking
     const statusData = {
-        lastUpdate: staticData.lastUpdated,
-        eventsCount: staticData.recurringEvents.length,
-        generatedEventsCount: staticData.generatedEvents.length,
-        source: staticData.updateSource
+        lastUpdate: currentDate.toISOString(),
+        eventsCount: recurringEvents.length,
+        source: 'Manual Google Sheets Sync',
+        events: recurringEvents.map(e => ({ title: e.title, month: getMonthName(e.month) }))
     };
     
     fs.writeFileSync('last-update.json', JSON.stringify(statusData, null, 2));
     console.log('📊 Created update status file');
+}
+
+async function main() {
+    try {
+        // Fetch data from Google Sheets
+        console.log('📥 Fetching data from Google Sheets...');
+        const data = await fetchGoogleSheets();
+        
+        // Parse the data
+        const recurringEvents = parseSheetData(data);
+        console.log(`✅ Successfully parsed ${recurringEvents.length} recurring events`);
+        
+        if (recurringEvents.length === 0) {
+            console.log('⚠️  No events found in spreadsheet. Exiting without changes.');
+            return;
+        }
+        
+        // Update the JavaScript file with static data
+        updateJavaScriptFile(recurringEvents);
+        
+        console.log('');
+        console.log('🎉 Calendar update completed successfully!');
+        console.log('');
+        console.log('📋 Summary:');
+        console.log(`   • ${recurringEvents.length} recurring events processed`);
+        console.log(`   • JavaScript file updated with static data`);
+        console.log(`   • Status file created: last-update.json`);
+        console.log('');
+        console.log('🚀 Next steps:');
+        console.log('   1. Review the changes in script.js');
+        console.log('   2. Commit and push the updated files to GitHub');
+        console.log('   3. The website will automatically use the new data');
+        console.log('');
+        console.log('💡 Run this script monthly to keep the calendar updated!');
+        
+    } catch (error) {
+        console.error('❌ Error during calendar update:', error.message);
+        console.log('');
+        console.log('🔧 Troubleshooting:');
+        console.log('   • Check your internet connection');
+        console.log('   • Verify the Google Sheets URL is accessible');
+        console.log('   • Ensure the spreadsheet has the correct format');
+        process.exit(1);
+    }
 }
 
 // Run the main function
