@@ -1,0 +1,458 @@
+/* AWS Brand Colors and Variables */
+:root {
+    --aws-orange: #FF9900;
+    --aws-dark-blue: #232F3E;
+    --aws-light-blue: #4B9CD3;
+    --aws-gray-100: #F2F3F3;
+    --aws-gray-200: #EAEDED;
+    --aws-gray-300: #D5DBDB;
+    --aws-gray-400: #AAB7B8;
+    --aws-gray-500: #85929E;
+    --aws-gray-600: #5D6D7E;
+    --aws-gray-700: #34495E;
+    --aws-gray-800: #2C3E50;
+    --aws-white: #FFFFFF;
+    --aws-success: #1D8102;
+    --aws-warning: #FF9900;
+    --aws-error: #D13212;
+    
+    --font-family: 'Amazon Ember', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+    --border-radius: 8px;
+    --shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    --shadow-hover: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+/* Reset and Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-family);
+    line-height: 1.6;
+    color: var(--aws-gray-800);
+    background-color: var(--aws-gray-100);
+}
+
+/* AWS Header */
+.aws-header {
+    background: linear-gradient(135deg, var(--aws-dark-blue) 0%, var(--aws-gray-700) 100%);
+    color: var(--aws-white);
+    padding: 1rem 0;
+    box-shadow: var(--shadow);
+}
+
+.header-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+
+.aws-logo {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.logo-text {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--aws-white);
+}
+
+.aws-header h1 {
+    font-size: 1.75rem;
+    font-weight: 500;
+    color: var(--aws-white);
+}
+
+/* Navigation */
+.main-nav {
+    background-color: var(--aws-white);
+    border-bottom: 2px solid var(--aws-gray-200);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    display: flex;
+    gap: 0;
+}
+
+.nav-btn {
+    background: none;
+    border: none;
+    padding: 1rem 2rem;
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--aws-gray-600);
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.nav-btn:hover {
+    color: var(--aws-dark-blue);
+    background-color: var(--aws-gray-100);
+}
+
+.nav-btn.active {
+    color: var(--aws-orange);
+    border-bottom-color: var(--aws-orange);
+    background-color: var(--aws-white);
+}
+
+/* Main Content */
+.main-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.content-section {
+    display: none;
+    animation: fadeIn 0.3s ease-in;
+}
+
+.content-section.active {
+    display: block;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.section-header {
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.section-header h2 {
+    font-size: 2rem;
+    font-weight: 500;
+    color: var(--aws-dark-blue);
+    margin-bottom: 0.5rem;
+}
+
+.section-header p {
+    font-size: 1.1rem;
+    color: var(--aws-gray-600);
+}
+
+/* Upcoming Events Section */
+.upcoming-events-container {
+    background-color: var(--aws-white);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    padding: 2rem;
+}
+
+.events-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 1.5rem;
+}
+
+.event-card {
+    background-color: var(--aws-white);
+    border: 1px solid var(--aws-gray-300);
+    border-radius: var(--border-radius);
+    padding: 1.5rem;
+    box-shadow: var(--shadow);
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.event-card:hover {
+    box-shadow: var(--shadow-hover);
+    transform: translateY(-2px);
+}
+
+.event-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 4px;
+    height: 100%;
+    background-color: var(--aws-orange);
+}
+
+.event-date {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--aws-orange);
+    margin-bottom: 0.5rem;
+}
+
+.event-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: var(--aws-dark-blue);
+    margin-bottom: 0.5rem;
+}
+
+.event-description {
+    color: var(--aws-gray-600);
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.event-type {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 500;
+    margin-top: 1rem;
+    background-color: var(--aws-gray-200);
+    color: var(--aws-gray-700);
+}
+
+.empty-state {
+    text-align: center;
+    padding: 3rem;
+    color: var(--aws-gray-500);
+}
+
+.empty-state h3 {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+    color: var(--aws-gray-600);
+}
+
+/* Calendar Section */
+.calendar-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+    margin-top: 1rem;
+}
+
+.control-btn {
+    background-color: var(--aws-orange);
+    color: var(--aws-white);
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--border-radius);
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.control-btn:hover {
+    background-color: #e68900;
+    transform: translateY(-1px);
+}
+
+.year-display {
+    font-size: 2rem;
+    font-weight: 600;
+    color: var(--aws-dark-blue);
+}
+
+.calendar-container {
+    background-color: var(--aws-white);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    padding: 2rem;
+    margin-top: 2rem;
+}
+
+.months-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+}
+
+.month-card {
+    border: 1px solid var(--aws-gray-300);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    background-color: var(--aws-white);
+}
+
+.month-header {
+    background-color: var(--aws-dark-blue);
+    color: var(--aws-white);
+    padding: 1rem;
+    text-align: center;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.month-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 1px;
+    background-color: var(--aws-gray-300);
+}
+
+.day-header {
+    background-color: var(--aws-gray-200);
+    padding: 0.5rem;
+    text-align: center;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--aws-gray-700);
+}
+
+.day-cell {
+    background-color: var(--aws-white);
+    padding: 0.5rem;
+    min-height: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    font-size: 0.9rem;
+    position: relative;
+}
+
+.day-cell.other-month {
+    background-color: var(--aws-gray-100);
+    color: var(--aws-gray-400);
+}
+
+.day-cell.has-event {
+    background-color: #fff3e0;
+}
+
+.day-cell.has-event::after {
+    content: '';
+    position: absolute;
+    bottom: 2px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 6px;
+    height: 6px;
+    background-color: var(--aws-orange);
+    border-radius: 50%;
+}
+
+/* Spreadsheet Section */
+.external-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: var(--aws-orange);
+    text-decoration: none;
+    font-weight: 500;
+    margin-top: 1rem;
+    transition: color 0.3s ease;
+}
+
+.external-link:hover {
+    color: #e68900;
+}
+
+.spreadsheet-container {
+    background-color: var(--aws-white);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    padding: 1rem;
+    margin-top: 2rem;
+    overflow: hidden;
+}
+
+.spreadsheet-container iframe {
+    border-radius: var(--border-radius);
+    width: 100%;
+    height: 600px;
+}
+
+/* Footer */
+.aws-footer {
+    background-color: var(--aws-dark-blue);
+    color: var(--aws-white);
+    padding: 2rem 0;
+    margin-top: 4rem;
+}
+
+.footer-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    text-align: center;
+}
+
+.footer-container p {
+    margin-bottom: 0.5rem;
+    color: var(--aws-gray-300);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .header-container {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+    }
+    
+    .aws-header h1 {
+        font-size: 1.5rem;
+    }
+    
+    .nav-container {
+        flex-direction: column;
+        padding: 0;
+    }
+    
+    .nav-btn {
+        padding: 1rem;
+        border-bottom: 1px solid var(--aws-gray-200);
+        border-right: none;
+    }
+    
+    .nav-btn.active {
+        border-bottom: 1px solid var(--aws-orange);
+        border-left: 3px solid var(--aws-orange);
+    }
+    
+    .main-content {
+        padding: 1rem;
+    }
+    
+    .calendar-controls {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .months-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .events-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .section-header h2 {
+        font-size: 1.5rem;
+    }
+    
+    .year-display {
+        font-size: 1.5rem;
+    }
+    
+    .upcoming-events-container,
+    .calendar-container,
+    .spreadsheet-container {
+        padding: 1rem;
+    }
+}
