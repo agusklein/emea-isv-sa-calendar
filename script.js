@@ -37,7 +37,7 @@ function initializeCalendarControls() {
     });
 }
 
-// Load events from Google Sheets
+// Load events from Google Sheets (with fallback to static data)
 async function loadEventsFromSheet() {
     console.log('Loading recurring events from Google Sheets...');
     showLoadingState();
@@ -64,7 +64,7 @@ async function loadEventsFromSheet() {
         
     } catch (error) {
         console.error('Error loading events from Google Sheets:', error);
-        console.log('Loading sample recurring events as fallback...');
+        console.log('Falling back to static data from last monthly sync...');
         loadSampleRecurringEvents();
     }
 }
@@ -196,9 +196,11 @@ function getMonthName(monthIndex) {
     return monthNames[monthIndex];
 }
 
-// Fallback sample recurring events
+// Fallback sample recurring events (will be replaced by automated monthly sync)
 function loadSampleRecurringEvents() {
-    console.log('Loading sample recurring events as fallback...');
+    console.log('Loading static recurring events from last monthly sync...');
+    
+    // This data will be automatically updated by GitHub Actions monthly sync
     recurringEvents = [
         {
             month: 6, // July (0-based index)
@@ -237,7 +239,7 @@ function loadSampleRecurringEvents() {
         }
     ];
     
-    console.log('Sample recurring events loaded:', recurringEvents);
+    console.log('Sample recurring events loaded (will be updated monthly):', recurringEvents);
     generateEventsForDisplay();
     displayUpcomingEvents();
     generateCalendar();

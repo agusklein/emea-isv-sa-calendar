@@ -1,0 +1,62 @@
+name: Monthly Google Sheets Sync
+
+on:
+  schedule:
+    # Run on the last day of each month at 23:00 UTC
+    - cron: '0 23 28-31 * *'
+  workflow_dispatch: # Allow manual triggering for testing
+
+jobs:
+  update-calendar:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
+        
+    - name: Install dependencies
+      run: |
+        npm init -y
+        npm install node-fetch
+        
+    - name: Run monthly update script
+      run: node .github/scripts/update-from-sheets.js
+      env:
+        SHEET_ID: '1DOlgJyYL7w_p1kR4IKjHvn7E8Cw31YWKZ2WOt-b_aJs'
+        
+    - name: Check for changes
+      id: verify-changed-files
+      run: |
+        if [ -n "$(git status --porcelain)" ]; then
+          echo "changed=true" >> $GITHUB_OUTPUT
+        else
+          echo "changed=false" >> $GITHUB_OUTPUT
+        fi
+        
+    - name: Commit and push changes
+      if: steps.verify-changed-files.outputs.changed == 'true'
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add .
+        git commit -m "🤖 Monthly update: Sync calendar with Google Sheets data ($(date +'%Y-%m-%d'))"
+        git push
+        
+    - name: Create update summary
+      if: steps.verify-changed-files.outputs.changed == 'true'
+      run: |
+        echo "✅ Calendar successfully updated from Google Sheets on $(date +'%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_STEP_SUMMARY
+        echo "📊 Updated sections 1 and 2 with latest spreadsheet data" >> $GITHUB_STEP_SUMMARY
+        
+    - name: No changes summary
+      if: steps.verify-changed-files.outputs.changed == 'false'
+      run: |
+        echo "ℹ️ No changes detected in Google Sheets data on $(date +'%Y-%m-%d %H:%M:%S UTC')" >> $GITHUB_STEP_SUMMARY
+        echo "📊 Calendar data is already up to date" >> $GITHUB_STEP_SUMMARY
