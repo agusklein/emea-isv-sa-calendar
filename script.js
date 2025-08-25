@@ -35,66 +35,113 @@ function initializeCalendarControls() {
 // Load events from Google Sheets
 async function loadEventsFromSheet() {
     console.log('Loading events from Google Sheets...');
+    showLoadingState();
+    
     try {
         const response = await fetch(SHEET_URL);
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
         const text = await response.text();
+        console.log('Raw response received from Google Sheets');
         
         // Parse Google Sheets JSON response
         const jsonString = text.substring(47).slice(0, -2);
         const data = JSON.parse(jsonString);
         
         events = parseSheetData(data);
-        console.log(`Loaded ${events.length} events from Google Sheets`);
+        console.log(`Successfully loaded ${events.length} events from Google Sheets:`, events);
         
         displayUpcomingEvents();
         generateCalendar();
         
     } catch (error) {
         console.error('Error loading events from Google Sheets:', error);
-        loadSampleEvents(); // Fallback to sample data
+        console.log('Loading sample events as fallback...');
+        loadSampleEvents();
     }
 }
 
 // Parse Google Sheets data
 function parseSheetData(data) {
+    console.log('Parsing Google Sheets data:', data);
+    
+    if (!data.table || !data.table.rows) {
+        console.error('Invalid data structure from Google Sheets');
+        return [];
+    }
+    
     const rows = data.table.rows;
     const parsedEvents = [];
     
-    // Skip header row (index 0)
+    console.log(`Processing ${rows.length} rows from spreadsheet`);
+    
+    // Skip header row (index 0) and process data rows
     for (let i = 1; i < rows.length; i++) {
         const row = rows[i];
-        if (row.c && row.c.length >= 2) {
-            const event = {
-                date: row.c[0] ? parseSheetDate(row.c[0].v) : null,
-                title: row.c[1] ? row.c[1].v : '',
-                description: row.c[2] ? row.c[2].v : '',
-                type: row.c[3] ? row.c[3].v.toLowerCase() : 'other',
-                location: row.c[4] ? row.c[4].v : ''
-            };
-            
-            if (event.date && event.title) {
-                parsedEvents.push(event);
-            }
+        
+        if (!row.c || row.c.length < 2) {
+            console.log(`Skipping row ${i}: insufficient data`);
+            continue;
+        }
+        
+        // Extract data from each column
+        const dateCell = row.c[0];
+        const titleCell = row.c[1];
+        const descriptionCell = row.c[2];
+        const typeCell = row.c[3];
+        const locationCell = row.c[4];
+        
+        const event = {
+            date: dateCell ? parseSheetDate(dateCell.v) : null,
+            title: titleCell ? titleCell.v : '',
+            description: descriptionCell ? descriptionCell.v : '',
+            type: typeCell ? typeCell.v.toLowerCase() : 'other',
+            location: locationCell ? locationCell.v : ''
+        };
+        
+        console.log(`Row ${i}:`, event);
+        
+        // Only add events with valid date and title
+        if (event.date && event.title && event.title.trim() !== '') {
+            parsedEvents.push(event);
+            console.log(`Added event: ${event.title} on ${event.date}`);
+        } else {
+            console.log(`Skipped row ${i}: missing date or title`);
         }
     }
     
-    return parsedEvents.sort((a, b) => new Date(a.date) - new Date(b.date));
+    // Sort events by date
+    const sortedEvents = parsedEvents.sort((a, b) => new Date(a.date) - new Date(b.date));
+    console.log('Final sorted events:', sortedEvents);
+    
+    return sortedEvents;
 }
 
 // Parse date from Google Sheets format
 function parseSheetDate(dateValue) {
+    console.log('Parsing date value:', dateValue, typeof dateValue);
+    
     if (typeof dateValue === 'string') {
-        // Handle various date formats
+        // Try to parse as ISO date or other common formats
         const date = new Date(dateValue);
         if (!isNaN(date.getTime())) {
-            return date.toISOString().split('T')[0];
+            const isoDate = date.toISOString().split('T')[0];
+            console.log(`Parsed string date "${dateValue}" to ${isoDate}`);
+            return isoDate;
         }
+        console.log(`Could not parse string date: ${dateValue}`);
         return dateValue;
     } else if (typeof dateValue === 'number') {
         // Google Sheets date serial number (days since December 30, 1899)
         const date = new Date((dateValue - 25569) * 86400 * 1000);
-        return date.toISOString().split('T')[0];
+        const isoDate = date.toISOString().split('T')[0];
+        console.log(`Parsed numeric date ${dateValue} to ${isoDate}`);
+        return isoDate;
     }
+    
+    console.log('Could not parse date value:', dateValue);
     return null;
 }
 
@@ -138,20 +185,29 @@ function loadSampleEvents() {
             location: 'Las Vegas, NV'
         },
         {
-            date: '2026-01-15',
-            title: 'New Year ISV Strategy Planning',
-            description: 'Strategic planning session for 2026 ISV initiatives and partner programs',
-            type: 'meeting',
-            location: 'Virtual'
+            date: '2026-01-28',
+            title: 'EMEA ISV SA Offsite - End of January',
+            description: 'Team offsite and strategic planning session for EMEA ISV Solutions Architects',
+            type: 'offsite',
+            location: 'Amsterdam'
+        },
+        {
+            date: '2026-06-25',
+            title: 'EMEA ISV SA Offsite - End of June',
+            description: 'Mid-year team offsite and business review for EMEA ISV Solutions Architects',
+            type: 'offsite',
+            location: 'Barcelona'
         }
     ];
     
+    console.log('Sample events loaded:', events);
     displayUpcomingEvents();
     generateCalendar();
 }
 
 // Display upcoming events (next 90 days)
 function displayUpcomingEvents() {
+    console.log('Displaying upcoming events...');
     const today = new Date();
     const next90Days = new Date(today.getTime() + (90 * 24 * 60 * 60 * 1000));
     
@@ -159,6 +215,8 @@ function displayUpcomingEvents() {
         const eventDate = new Date(event.date);
         return eventDate >= today && eventDate <= next90Days;
     });
+    
+    console.log(`Found ${upcomingEvents.length} upcoming events in next 90 days:`, upcomingEvents);
     
     const container = document.getElementById('upcomingEventsGrid');
     const noEventsMessage = document.getElementById('noEventsMessage');
@@ -191,108 +249,93 @@ function displayUpcomingEvents() {
     }).join('');
 }
 
-// Generate calendar
+// Generate calendar with monthly view
 function generateCalendar() {
-    const container = document.getElementById('monthsGrid');
+    console.log(`Generating calendar for year ${currentYear}...`);
+    const container = document.getElementById('monthsList');
     const startMonth = currentYear === 2025 ? 7 : 0; // Start from August 2025 (month 7)
     const endMonth = 11; // Always end at December
     
     container.innerHTML = '';
     
     for (let month = startMonth; month <= endMonth; month++) {
-        const monthCard = createMonthCard(currentYear, month);
-        container.appendChild(monthCard);
+        const monthSection = createMonthSection(currentYear, month);
+        container.appendChild(monthSection);
     }
 }
 
-// Create individual month card
-function createMonthCard(year, month) {
+// Create individual month section
+function createMonthSection(year, month) {
     const monthNames = [
         'January', 'February', 'March', 'April', 'May', 'June',
         'July', 'August', 'September', 'October', 'November', 'December'
     ];
     
-    const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-    
-    const monthCard = document.createElement('div');
-    monthCard.className = 'month-card';
+    const monthSection = document.createElement('div');
+    monthSection.className = 'month-section';
     
     // Month header
     const header = document.createElement('div');
     header.className = 'month-header';
     header.textContent = `${monthNames[month]} ${year}`;
-    monthCard.appendChild(header);
+    monthSection.appendChild(header);
     
-    // Month grid
-    const grid = document.createElement('div');
-    grid.className = 'month-grid';
-    
-    // Day headers
-    dayNames.forEach(day => {
-        const dayHeader = document.createElement('div');
-        dayHeader.className = 'day-header';
-        dayHeader.textContent = day;
-        grid.appendChild(dayHeader);
+    // Get events for this month
+    const monthEvents = events.filter(event => {
+        const eventDate = new Date(event.date);
+        return eventDate.getFullYear() === year && eventDate.getMonth() === month;
     });
     
-    // Get first day of month and number of days
-    const firstDay = new Date(year, month, 1);
-    const lastDay = new Date(year, month + 1, 0);
-    const daysInMonth = lastDay.getDate();
-    const startingDayOfWeek = firstDay.getDay();
+    console.log(`${monthNames[month]} ${year}: Found ${monthEvents.length} events`, monthEvents);
     
-    // Previous month's trailing days
-    const prevMonth = new Date(year, month, 0);
-    const daysInPrevMonth = prevMonth.getDate();
+    // Month events container
+    const eventsContainer = document.createElement('div');
+    eventsContainer.className = 'month-events';
     
-    for (let i = startingDayOfWeek - 1; i >= 0; i--) {
-        const dayCell = document.createElement('div');
-        dayCell.className = 'day-cell other-month';
-        dayCell.textContent = daysInPrevMonth - i;
-        grid.appendChild(dayCell);
+    if (monthEvents.length === 0) {
+        const noEvents = document.createElement('div');
+        noEvents.className = 'no-events-month';
+        noEvents.textContent = 'No events scheduled for this month';
+        eventsContainer.appendChild(noEvents);
+    } else {
+        // Sort events by date within the month
+        monthEvents.sort((a, b) => new Date(a.date) - new Date(b.date));
+        
+        monthEvents.forEach(event => {
+            const eventElement = createMonthEventElement(event);
+            eventsContainer.appendChild(eventElement);
+        });
     }
     
-    // Current month days
-    for (let day = 1; day <= daysInMonth; day++) {
-        const dayCell = document.createElement('div');
-        dayCell.className = 'day-cell';
-        dayCell.textContent = day;
-        
-        // Check if this day has events
-        const dateString = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-        const dayEvents = events.filter(event => event.date === dateString);
-        
-        if (dayEvents.length > 0) {
-            dayCell.classList.add('has-event');
-            if (dayEvents.length > 1) {
-                dayCell.classList.add('has-multiple-events');
-            }
-            
-            // Create tooltip with event details
-            const tooltip = document.createElement('div');
-            tooltip.className = 'event-tooltip';
-            tooltip.innerHTML = dayEvents.map(event => 
-                `<strong>${event.title}</strong>${event.location ? ` - ${event.location}` : ''}`
-            ).join('<br>');
-            dayCell.appendChild(tooltip);
-        }
-        
-        grid.appendChild(dayCell);
-    }
+    monthSection.appendChild(eventsContainer);
+    return monthSection;
+}
+
+// Create individual event element for month view
+function createMonthEventElement(event) {
+    const eventDate = new Date(event.date);
+    const day = eventDate.getDate();
+    const weekday = eventDate.toLocaleDateString('en-US', { weekday: 'short' });
     
-    // Next month's leading days to fill the grid
-    const totalCells = grid.children.length - 7; // Subtract day headers
-    const remainingCells = Math.max(0, 42 - totalCells); // 6 rows × 7 days = 42 cells
+    const eventDiv = document.createElement('div');
+    eventDiv.className = 'month-event';
     
-    for (let day = 1; day <= remainingCells && totalCells < 35; day++) {
-        const dayCell = document.createElement('div');
-        dayCell.className = 'day-cell other-month';
-        dayCell.textContent = day;
-        grid.appendChild(dayCell);
-    }
+    eventDiv.innerHTML = `
+        <div class="event-date-day">
+            <span class="day">${day}</span>
+            <span class="weekday">${weekday}</span>
+        </div>
+        <div class="event-details">
+            <div class="title">${event.title}</div>
+            <div class="description">${event.description}</div>
+            <div class="meta">
+                ${event.location ? `<span>📍 ${event.location}</span>` : ''}
+                <span class="event-type-badge">${capitalizeFirst(event.type)}</span>
+            </div>
+        </div>
+    `;
     
-    monthCard.appendChild(grid);
-    return monthCard;
+    return eventDiv;
 }
 
 // Utility functions
@@ -311,17 +354,17 @@ function capitalizeFirst(str) {
     return str.charAt(0).toUpperCase() + str.slice(1);
 }
 
+// Show loading state
+function showLoadingState() {
+    const upcomingContainer = document.getElementById('upcomingEventsGrid');
+    const calendarContainer = document.getElementById('monthsList');
+    
+    upcomingContainer.innerHTML = '<div class="loading-spinner">Loading upcoming events from Google Sheets...</div>';
+    calendarContainer.innerHTML = '<div class="loading-spinner">Loading calendar from Google Sheets...</div>';
+}
+
 // Refresh data periodically (every 10 minutes)
 setInterval(() => {
     console.log('Refreshing events data...');
     loadEventsFromSheet();
 }, 10 * 60 * 1000);
-
-// Add some visual feedback when data is loading
-function showLoadingState() {
-    const upcomingContainer = document.getElementById('upcomingEventsGrid');
-    const calendarContainer = document.getElementById('monthsGrid');
-    
-    upcomingContainer.innerHTML = '<div class="loading-spinner">Loading upcoming events...</div>';
-    calendarContainer.innerHTML = '<div class="loading-spinner">Loading calendar...</div>';
-}
