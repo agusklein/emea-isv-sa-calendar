@@ -747,7 +747,23 @@ function createMonthCard(year, month) {
     // Get events for this month and year
     const monthEvents = generatedEvents.filter(event => {
         const eventDate = new Date(event.date);
-        return eventDate.getFullYear() === year && eventDate.getMonth() === month;
+        const eventYear = eventDate.getFullYear();
+        const eventMonth = eventDate.getMonth();
+        const matches = eventYear === year && eventMonth === month;
+        
+        if (month === 8 && year === 2025) { // Debug September 2025 specifically
+            console.log(`Checking event for Sep 2025:`, {
+                event: event.title,
+                eventDate: event.date,
+                eventYear,
+                eventMonth,
+                targetYear: year,
+                targetMonth: month,
+                matches
+            });
+        }
+        
+        return matches;
     });
     
     console.log(`${monthNames[month]} ${year}: Found ${monthEvents.length} events`, monthEvents);
