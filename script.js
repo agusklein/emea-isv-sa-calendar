@@ -445,13 +445,23 @@ async function loadEventsFromSheet() {
         // Also create recurring events structure for calendar display
         recurringEvents = events;
         
+        // Store current scroll position before updating
+        const currentScrollY = window.scrollY;
+        
         displayUpcomingEvents();
         generateCalendar();
+        
+        // Restore scroll position after update
+        setTimeout(() => {
+            window.scrollTo(0, currentScrollY);
+        }, 50);
         
         // Force a second calendar generation after a short delay to ensure events are displayed
         setTimeout(() => {
             console.log('Force refreshing calendar after event load...');
+            const scrollY = window.scrollY;
             generateCalendar();
+            window.scrollTo(0, scrollY);
         }, 100);
         
     } catch (error) {
