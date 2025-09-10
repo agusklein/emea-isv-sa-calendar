@@ -475,8 +475,8 @@ function parseSheetData(data) {
     
     console.log(`Processing ${rows.length} rows from spreadsheet`);
     
-    // Skip header row (index 0) and process data rows
-    for (let i = 1; i < rows.length; i++) {
+    // Process all data rows (no header row to skip in this data)
+    for (let i = 0; i < rows.length; i++) {
         const row = rows[i];
         
         if (!row.c || row.c.length < 2) {
