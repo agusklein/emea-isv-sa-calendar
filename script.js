@@ -759,6 +759,12 @@ function createMonthCard(year, month) {
     
     console.log(`${monthNames[month]} ${year}: Found ${monthEvents.length} events`, monthEvents);
     
+    // Debug September 2025 specifically
+    if (month === 8 && year === 2025) {
+        console.log('DEBUG: September 2025 - All generatedEvents:', generatedEvents);
+        console.log('DEBUG: September 2025 - Filtered events:', monthEvents);
+    }
+    
     // Month events container
     const eventsContainer = document.createElement('div');
     eventsContainer.className = 'month-events';
