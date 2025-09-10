@@ -416,7 +416,7 @@ function initializeCalendarControls() {
 
 // Load events from Google Sheets (with fallback to static data)
 async function loadEventsFromSheet() {
-    console.log('Loading recurring events from Google Sheets...');
+    console.log('Loading events from Google Sheets...');
     showLoadingState();
     
     try {
@@ -432,10 +432,18 @@ async function loadEventsFromSheet() {
         const jsonString = text.substring(47).slice(0, -2);
         const data = JSON.parse(jsonString);
         
-        recurringEvents = parseSheetData(data);
-        console.log(`Successfully loaded ${recurringEvents.length} recurring events from Google Sheets:`, recurringEvents);
+        const events = parseSheetData(data);
+        console.log(`Successfully loaded ${events.length} events from Google Sheets:`, events);
         
-        generateEventsForDisplay();
+        // Set the global variables with the loaded data
+        generatedEvents = events.map(event => ({
+            ...event,
+            date: `${event.year}-${String(event.month + 1).padStart(2, '0')}-15` // Use 15th of month as default
+        }));
+        
+        // Also create recurring events structure for calendar display
+        recurringEvents = events;
+        
         displayUpcomingEvents();
         generateCalendar();
         
@@ -469,19 +477,21 @@ function parseSheetData(data) {
             continue;
         }
         
-        // Extract data from each column
-        const monthCell = row.c[0]; // Month name or number
-        const titleCell = row.c[1];
-        const descriptionCell = row.c[2];
-        const typeCell = row.c[3];
-        const locationCell = row.c[4];
+        // Extract data from each column based on actual spreadsheet structure
+        // Column A (0): Empty, Column B (1): Number, Column C (2): Activity, Column D (3): When?, Column E (4): Comments, Column F (5): Empty
+        const numberCell = row.c[1];
+        const titleCell = row.c[2];
+        const whenCell = row.c[3];
+        const descriptionCell = row.c[4];
         
         const recurringEvent = {
-            month: monthCell ? parseMonthFromSheet(monthCell.v) : null,
+            month: whenCell ? parseMonthFromSheet(whenCell.v) : null,
             title: titleCell ? titleCell.v : '',
             description: descriptionCell ? descriptionCell.v : '',
-            type: typeCell ? typeCell.v.toLowerCase() : 'other',
-            location: locationCell ? locationCell.v : ''
+            type: 'meeting', // Default type since not in spreadsheet
+            location: '',
+            year: whenCell ? parseYearFromSheet(whenCell.v) : 2025,
+            originalWhen: whenCell ? whenCell.v : ''
         };
         
         console.log(`Row ${i}:`, recurringEvent);
@@ -499,7 +509,7 @@ function parseSheetData(data) {
     return parsedRecurringEvents;
 }
 
-// Parse month from Google Sheets (could be month name or number)
+// Parse month from Google Sheets (handles "Month YYYY" format)
 function parseMonthFromSheet(monthValue) {
     console.log('Parsing month value:', monthValue, typeof monthValue);
     
@@ -510,11 +520,12 @@ function parseMonthFromSheet(monthValue) {
             'july', 'august', 'september', 'october', 'november', 'december'
         ];
         
-        // Try to find full month name
-        const monthIndex = monthNames.findIndex(name => name.startsWith(monthStr));
-        if (monthIndex !== -1) {
-            console.log(`Parsed month name "${monthValue}" to month ${monthIndex}`);
-            return monthIndex;
+        // Try to find month name in "Month YYYY" format
+        for (let i = 0; i < monthNames.length; i++) {
+            if (monthStr.includes(monthNames[i])) {
+                console.log(`Parsed month name "${monthValue}" to month ${i}`);
+                return i;
+            }
         }
         
         // Try to parse as number
@@ -532,6 +543,23 @@ function parseMonthFromSheet(monthValue) {
     
     console.log('Could not parse month value:', monthValue);
     return null;
+}
+
+// Parse year from Google Sheets (handles "Month YYYY" format)
+function parseYearFromSheet(dateValue) {
+    console.log('Parsing year from:', dateValue);
+    
+    if (typeof dateValue === 'string') {
+        const yearMatch = dateValue.match(/\b(20\d{2})\b/);
+        if (yearMatch) {
+            const year = parseInt(yearMatch[1]);
+            console.log(`Parsed year ${year} from "${dateValue}"`);
+            return year;
+        }
+    }
+    
+    console.log('Could not parse year, defaulting to 2025');
+    return 2025; // Default year
 }
 
 // Generate events for display based on recurring events
