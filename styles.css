@@ -524,3 +524,26 @@ body {
         font-size: 1rem;
     }
 }
+/* Outlook Export Button */
+.outlook-btn {
+    background: linear-gradient(135deg, #0078d4, #106ebe);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-left: 15px;
+}
+
+.outlook-btn:hover {
+    background: linear-gradient(135deg, #106ebe, #005a9e);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 120, 212, 0.3);
+}
+
+.outlook-btn:active {
+    transform: translateY(0);
+}

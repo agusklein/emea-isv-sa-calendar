@@ -380,9 +380,11 @@ let currentYear = 2025;
 let recurringEvents = []; // Changed from events to recurringEvents
 let generatedEvents = []; // All events generated for display
 
-// Google Sheets configuration
+// Configuration
 const SHEET_ID = '1DOlgJyYL7w_p1kR4IKjHvn7E8Cw31YWKZ2WOt-b_aJs';
 const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=Sheet1`;
+const LAMBDA_API_URL = 'https://YOUR_API_GATEWAY_URL/prod/events'; // Replace with actual API Gateway URL
+const USE_QUIP = false; // Set to true to use Quip via Lambda, false for Google Sheets fallback
 
 // Initialize the application
 document.addEventListener('DOMContentLoaded', function() {
@@ -414,12 +416,89 @@ function initializeCalendarControls() {
         displayUpcomingEvents();
         generateCalendar();
     });
+    
+    // Outlook export button
+    const outlookBtn = document.getElementById('exportOutlook');
+    outlookBtn.addEventListener('click', exportToOutlook);
 }
 
-// Load events from Google Sheets (with fallback to static data)
+// Load events from data source (Quip via Lambda or Google Sheets fallback)
 async function loadEventsFromSheet() {
-    console.log('Loading events from Google Sheets...');
+    console.log('Loading events from data source...');
     showLoadingState();
+    
+    try {
+        let events = [];
+        
+        if (USE_QUIP) {
+            // Load from Quip via Lambda
+            events = await loadEventsFromQuip();
+        } else {
+            // Fallback to Google Sheets
+            events = await loadEventsFromGoogleSheets();
+        }
+        
+        console.log(`Successfully loaded ${events.length} events from ${USE_QUIP ? 'Quip' : 'Google Sheets'}:`, events);
+        
+        // Set the global variables with the loaded data
+        generatedEvents = events.map(event => ({
+            ...event,
+            date: `${event.year}-${String(event.month + 1).padStart(2, '0')}-15` // Use 15th of month as default
+        }));
+        
+        console.log('FINAL generatedEvents after mapping:', generatedEvents);
+        console.log('September 2025 events in generatedEvents:', generatedEvents.filter(e => e.month === 8 && e.year === 2025));
+        
+        // Also create recurring events structure for calendar display
+        recurringEvents = events;
+        
+        // Store current scroll position before updating
+        const currentScrollY = window.scrollY;
+        
+        displayUpcomingEvents();
+        generateCalendar();
+        
+        // Restore scroll position after update
+        setTimeout(() => {
+            window.scrollTo(0, currentScrollY);
+        }, 50);
+        
+        // Force a second calendar generation after a short delay to ensure events are displayed
+        setTimeout(() => {
+            console.log('Force refreshing calendar after event load...');
+            const scrollY = window.scrollY;
+            generateCalendar();
+            window.scrollTo(0, scrollY);
+        }, 100);
+        
+    } catch (error) {
+        console.error('Error loading events:', error);
+        console.log('Falling back to static data from last sync...');
+        loadSampleRecurringEvents();
+    }
+}
+
+// Load events from Quip via Lambda
+async function loadEventsFromQuip() {
+    console.log('Fetching events from Quip via Lambda...');
+    
+    const response = await fetch(LAMBDA_API_URL);
+    if (!response.ok) {
+        throw new Error(`Lambda API error: ${response.status}`);
+    }
+    
+    const data = await response.json();
+    
+    if (data.error) {
+        throw new Error(`Quip API error: ${data.error}`);
+    }
+    
+    console.log(`Successfully loaded ${data.events.length} events from Quip`);
+    return data.events;
+}
+
+// Load events from Google Sheets (fallback)
+async function loadEventsFromGoogleSheets() {
     
     try {
         const response = await fetch(SHEET_URL);
@@ -871,3 +950,53 @@ function showLoadingState() {
 //     console.log('Refreshing recurring events data...');
 //     loadEventsFromSheet();
 // }, 10 * 60 * 1000);
+
+// Export events to Outlook calendar
+function exportToOutlook() {
+    console.log('Exporting events to Outlook...');
+    
+    // Generate ICS file content
+    const icsContent = generateICSFile(generatedEvents);
+    
+    // Create download link
+    const blob = new Blob([icsContent], { type: 'text/calendar' });
+    const url = window.URL.createObjectURL(blob);
+    
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'EMEA-ISV-Calendar.ics';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    window.URL.revokeObjectURL(url);
+    
+    alert('Calendar file downloaded! Open the .ics file to add events to Outlook.');
+}
+
+// Generate ICS calendar file
+function generateICSFile(events) {
+    let ics = 'BEGIN:VCALENDAR\n';
+    ics += 'VERSION:2.0\n';
+    ics += 'PRODID:-//EMEA ISV SA Calendar//EN\n';
+    ics += 'CALSCALE:GREGORIAN\n';
+    
+    events.forEach(event => {
+        const eventDate = new Date(event.date);
+        const dateStr = eventDate.toISOString().replace(/[-:]/g, '').split('T')[0];
+        
+        ics += 'BEGIN:VEVENT\n';
+        ics += `UID:${event.title.replace(/\s+/g, '-')}-${dateStr}@emea-isv-calendar\n`;
+        ics += `DTSTART;VALUE=DATE:${dateStr}\n`;
+        ics += `DTEND;VALUE=DATE:${dateStr}\n`;
+        ics += `SUMMARY:${event.title}\n`;
+        ics += `DESCRIPTION:${event.description || ''}\n`;
+        ics += `LOCATION:${event.location || ''}\n`;
+        ics += 'STATUS:TENTATIVE\n';
+        ics += 'TRANSP:TRANSPARENT\n';
+        ics += 'END:VEVENT\n';
+    });
+    
+    ics += 'END:VCALENDAR\n';
+    return ics;
+}
