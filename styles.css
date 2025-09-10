@@ -547,3 +547,23 @@ body {
 .outlook-btn:active {
     transform: translateY(0);
 }
+/* Prevent iframe from causing page jumps */
+.spreadsheet-container {
+    position: relative;
+    overflow: hidden;
+}
+
+.spreadsheet-container iframe {
+    display: block;
+    border: none;
+    overflow: hidden;
+}
+
+/* Prevent any scroll behavior changes */
+html {
+    scroll-behavior: auto !important;
+}
+
+body {
+    scroll-behavior: auto !important;
+}
