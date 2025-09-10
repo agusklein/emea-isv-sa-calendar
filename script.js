@@ -439,6 +439,9 @@ async function loadEventsFromSheet() {
             date: `${event.year}-${String(event.month + 1).padStart(2, '0')}-15` // Use 15th of month as default
         }));
         
+        console.log('FINAL generatedEvents after mapping:', generatedEvents);
+        console.log('September 2025 events in generatedEvents:', generatedEvents.filter(e => e.month === 8 && e.year === 2025));
+        
         // Also create recurring events structure for calendar display
         recurringEvents = events;
         
@@ -499,6 +502,11 @@ function parseSheetData(data) {
         };
         
         console.log(`Row ${i}:`, recurringEvent);
+        
+        // Debug OP2 Prep specifically
+        if (recurringEvent.title && recurringEvent.title.includes('OP2 Prep')) {
+            console.log('FOUND OP2 PREP:', recurringEvent);
+        }
         
         // Only add events with valid month and title
         if (recurringEvent.month !== null && recurringEvent.title && recurringEvent.title.trim() !== '') {
@@ -812,7 +820,6 @@ function createMonthEventElement(event) {
             <div class="description">${event.description}</div>
             <div class="meta">
                 ${event.location ? `<span>📍 ${event.location}</span>` : ''}
-                <span class="event-type-badge">${capitalizeFirst(event.type)}</span>
             </div>
         </div>
     `;
