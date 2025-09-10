@@ -862,8 +862,8 @@ function showLoadingState() {
     calendarContainer.innerHTML = '<div class="loading-spinner">Loading calendar from Google Sheets...</div>';
 }
 
-// Refresh data periodically (every 10 minutes)
-setInterval(() => {
-    console.log('Refreshing recurring events data...');
-    loadEventsFromSheet();
-}, 10 * 60 * 1000);
+// Refresh data periodically (disabled to prevent editing interruption)
+// setInterval(() => {
+//     console.log('Refreshing recurring events data...');
+//     loadEventsFromSheet();
+// }, 10 * 60 * 1000);
