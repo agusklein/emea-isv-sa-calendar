@@ -387,6 +387,10 @@ const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tq
 // Initialize the application
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Initializing EMEA ISV SA Managers Annual Clock...');
+    
+    // Prevent any scroll behavior
+    document.body.style.scrollBehavior = 'auto';
+    
     initializeCalendarControls();
     loadEventsFromSheet();
 });
