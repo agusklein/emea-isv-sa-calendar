@@ -400,7 +400,6 @@ function initializeCalendarControls() {
     prevYearBtn.addEventListener('click', () => {
         currentYear--;
         yearDisplay.textContent = currentYear;
-        generateEventsForDisplay();
         displayUpcomingEvents();
         generateCalendar();
     });
@@ -408,7 +407,6 @@ function initializeCalendarControls() {
     nextYearBtn.addEventListener('click', () => {
         currentYear++;
         yearDisplay.textContent = currentYear;
-        generateEventsForDisplay();
         displayUpcomingEvents();
         generateCalendar();
     });
