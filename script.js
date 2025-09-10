@@ -715,6 +715,13 @@ function displayUpcomingEvents() {
 // Generate calendar with monthly view
 function generateCalendar() {
     console.log(`Generating calendar for year ${currentYear}...`);
+    
+    // Ensure we have events loaded
+    if (generatedEvents.length === 0 && typeof STATIC_EVENTS !== 'undefined') {
+        console.log('No events loaded, using static events for calendar');
+        generatedEvents = STATIC_EVENTS;
+    }
+    
     const container = document.getElementById('monthsList');
     const startMonth = currentYear === 2025 ? 7 : 0; // Start from August 2025 (month 7)
     const endMonth = 11; // Always end at December
@@ -747,23 +754,7 @@ function createMonthCard(year, month) {
     // Get events for this month and year
     const monthEvents = generatedEvents.filter(event => {
         const eventDate = new Date(event.date);
-        const eventYear = eventDate.getFullYear();
-        const eventMonth = eventDate.getMonth();
-        const matches = eventYear === year && eventMonth === month;
-        
-        if (month === 8 && year === 2025) { // Debug September 2025 specifically
-            console.log(`Checking event for Sep 2025:`, {
-                event: event.title,
-                eventDate: event.date,
-                eventYear,
-                eventMonth,
-                targetYear: year,
-                targetMonth: month,
-                matches
-            });
-        }
-        
-        return matches;
+        return eventDate.getFullYear() === year && eventDate.getMonth() === month;
     });
     
     console.log(`${monthNames[month]} ${year}: Found ${monthEvents.length} events`, monthEvents);
