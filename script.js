@@ -445,6 +445,12 @@ async function loadEventsFromSheet() {
         displayUpcomingEvents();
         generateCalendar();
         
+        // Force a second calendar generation after a short delay to ensure events are displayed
+        setTimeout(() => {
+            console.log('Force refreshing calendar after event load...');
+            generateCalendar();
+        }, 100);
+        
     } catch (error) {
         console.error('Error loading events from Google Sheets:', error);
         console.log('Falling back to static data from last monthly sync...');
